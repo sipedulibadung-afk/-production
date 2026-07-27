@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bantuan - SIPEDULI BADUNG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <style>
+        /* Override & Custom Styles for Bantuan Page */
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+            background: linear-gradient(180deg, var(--primary-green, #28a745) 0%, var(--dark-green, #1e7e34) 100%);
+            z-index: 1000; overflow-y: auto; box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-orange, #fd7e14) 0%, var(--dark-orange, #e56b00) 100%);
+            border-bottom: 3px solid var(--white); padding: 20px; text-align: center;
+        }
+        .sidebar-header i { font-size: 2.5rem; color: var(--white); }
+        .sidebar-header h6, .sidebar-header small { color: var(--white) !important; margin: 0; }
+        .nav-link-sidebar {
+            display: flex; align-items: center; padding: 12px 20px;
+            color: rgba(255,255,255,0.9) !important; text-decoration: none;
+            transition: all 0.3s ease; border-left: 4px solid transparent; font-weight: 500;
+        }
+        .nav-link-sidebar:hover { background: rgba(255,255,255,0.15); border-left-color: var(--primary-orange); }
+        .nav-link-sidebar.active {
+            background: linear-gradient(90deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            border-left-color: var(--white); font-weight: 600;
+        }
+        .nav-link-sidebar i { width: 24px; margin-right: 12px; font-size: 1.1rem; }
+        .main-content { margin-left: 260px; min-height: 100vh; background-color: #f8f9fa; }
+        .top-navbar {
+            background: var(--white); min-height: 60px; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 3px solid var(--primary-green);
+            padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .top-navbar h5 { color: var(--dark-green, #1e7e34) !important; font-weight: 700; margin: 0; }
+        .content-area { padding: 30px; }
+        .card-custom {
+            border: none; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); background: var(--white);
+        }
+        .card-custom .card-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white) !important; border-bottom: 3px solid var(--primary-orange);
+            font-weight: 600; padding: 15px 20px; border-radius: 12px 12px 0 0;
+        }
+        .card-custom .card-header h5, .card-custom .card-header h6 { color: var(--white) !important; margin: 0; }
+        .table-custom thead {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+        }
+        .table-custom thead th {
+            color: var(--primary-green) !important; font-weight: 600; border: none;
+            padding: 12px; font-size: 0.85rem;
+        }
+        .table-custom tbody td {
+            color: #212529 !important; vertical-align: middle; padding: 10px; font-size: 0.9rem;
+        }
+        .table-custom tbody tr:hover { background-color: rgba(40, 167, 69, 0.05); }
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            color: white; border: none; padding: 8px 20px; border-radius: 8px;
+            font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-add:hover {
+            transform: translateY(-2px); color: white;
+            box-shadow: 0 4px 12px rgba(253, 126, 20, 0.4);
+        }
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white; border: none; padding: 10px 25px; border-radius: 8px;
+            font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px); color: white;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+        .form-label { font-weight: 600; color: #495057; font-size: 0.9rem; }
+        .form-control, .form-select {
+            border: 2px solid #e9ecef; border-radius: 8px; padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+        .info-card {
+            background: linear-gradient(135deg, rgba(253, 126, 20, 0.1) 0%, rgba(253, 126, 20, 0.05) 100%);
+            border-left: 4px solid var(--primary-orange); padding: 15px;
+            border-radius: 8px; margin-bottom: 20px;
+        }
+        .info-card i { color: var(--primary-orange); font-size: 1.3rem; }
+        .stat-box {
+            background: var(--white); border-radius: 12px; padding: 20px;
+            text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--primary-green); transition: all 0.3s ease;
+        }
+        .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+        .stat-box i { font-size: 2rem; margin-bottom: 10px; }
+        .stat-box h3 { font-weight: 800; margin: 10px 0 5px 0; }
+        .stat-box small { color: #6c757d; font-size: 0.85rem; }
+        .stat-box.stat-selesai { border-top-color: #28a745; }
+        .stat-box.stat-selesai i, .stat-box.stat-selesai h3 { color: #28a745; }
+        .stat-box.stat-proses { border-top-color: #fd7e14; }
+        .stat-box.stat-proses i, .stat-box.stat-proses h3 { color: #fd7e14; }
+        .stat-box.stat-menunggu { border-top-color: #6c757d; }
+        .stat-box.stat-menunggu i, .stat-box.stat-menunggu h3 { color: #6c757d; }
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="bi bi-heart-pulse-fill"></i>
+            <h6 class="fw-bold mt-2">SIPEDULI BADUNG</h6>
+            <small>Bantuan</small>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link-sidebar"><i class="bi bi-speedometer2"></i>Dashboard</a>
+            <a href="data-disabilitas.html" class="nav-link-sidebar"><i class="bi bi-people"></i>Data Disabilitas</a>
+            <a href="asesmen.html" class="nav-link-sidebar"><i class="bi bi-clipboard2-check"></i>e-Asesmen</a>
+            <a href="bantuan.html" class="nav-link-sidebar active"><i class="bi bi-gift"></i>Bantuan</a>
+            <a href="monitoring.html" class="nav-link-sidebar"><i class="bi bi-graph-up"></i>Monitoring</a>
+            <a href="peta.html" class="nav-link-sidebar"><i class="bi bi-geo-alt"></i>Peta Sebaran</a>
+            <a href="laporan.html" class="nav-link-sidebar"><i class="bi bi-file-earmark-bar-graph"></i>Laporan</a>
+            <a href="pimpinan.html" class="nav-link-sidebar"><i class="bi bi-bar-chart-line"></i>Dashboard Pimpinan</a>
+            <hr class="text-white-50 mx-3">
+            <a href="login.html" class="nav-link-sidebar text-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i>Keluar</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-2" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h5><i class="bi bi-gift me-2"></i>Penyaluran Bantuan</h5>
+            </div>
+            <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#modalBantuan">
+                <i class="bi bi-plus-circle me-1"></i>Catat Bantuan
+            </button>
+        </nav>
+
+        <div class="content-area">
+            <!-- Info Card -->
+            <div class="info-card">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong>Info:</strong> Modul ini digunakan untuk mencatat penyaluran bantuan kepada penyandang disabilitas. Status bantuan dapat diupdate menjadi <strong>Proses</strong> atau <strong>Selesai</strong>.
+            </div>
+
+            <!-- Stat Boxes -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="stat-box stat-selesai">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <h3 id="statSelesai">0</h3>
+                        <small>Bantuan Selesai</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-box stat-proses">
+                        <i class="bi bi-hourglass-split"></i>
+                        <h3 id="statProses">0</h3>
+                        <small>Dalam Proses</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-box stat-menunggu">
+                        <i class="bi bi-clock-fill"></i>
+                        <h3 id="statMenunggu">0</h3>
+                        <small>Menunggu Persetujuan</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter -->
+            <div class="card-custom mb-4">
+                <div class="card-body p-3">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Cari Nama/NIK</label>
+                            <input type="text" class="form-control" id="filterCari" placeholder="Ketik nama atau NIK...">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status Bantuan</label>
+                            <select class="form-select" id="filterStatus">
+                                <option value="">Semua Status</option>
+                                <option>Menunggu</option>
+                                <option>Proses</option>
+                                <option>Selesai</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Kecamatan</label>
+                            <select class="form-select" id="filterKecamatan">
+                                <option value="">Semua</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button class="btn btn-save w-100" onclick="loadBantuan()">
+                                <i class="bi bi-search me-1"></i>Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Bantuan -->
+            <div class="card-custom">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6><i class="bi bi-list-check me-2"></i>Riwayat Penyaluran Bantuan</h6>
+                    <button class="btn btn-sm btn-light" onclick="exportBantuan()">
+                        <i class="bi bi-download me-1"></i>Export
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-custom table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Penerima</th>
+                                    <th>NIK</th>
+                                    <th>Jenis Bantuan</th>
+                                    <th>Tanggal</th>
+                                    <th>Nilai (Rp)</th>
+                                    <th>Kecamatan</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyBantuan">
+                                <tr><td colspan="9" class="text-center py-4">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <small class="text-muted" id="infoData">Menampilkan 0 data</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Bantuan -->
+    <div class="modal fade" id="modalBantuan" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); color: white; border-bottom: 3px solid var(--primary-orange);">
+                    <h5 class="modal-title"><i class="bi bi-gift-fill me-2"></i>Catat Penyaluran Bantuan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="info-card">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Info:</strong> Pilih penerima dari daftar disabilitas. Data akan otomatis terisi.
+                    </div>
+                    
+                    <form id="formBantuan">
+                        <div class="mb-3">
+                            <label class="form-label">Pilih Penerima <span class="text-danger">*</span></label>
+                            <select class="form-select" name="disabilitas_id" id="selectPenerima" required onchange="autoFillBantuan()">
+                                <option value="">-- Pilih dari daftar --</option>
+                            </select>
+                        </div>
+
+                        <!-- Data Auto-Fill (Readonly) -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama Penerima</label>
+                                <input type="text" class="form-control" id="infoNama" readonly style="background: #f8f9fa;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">NIK</label>
+                                <input type="text" class="form-control" id="infoNik" readonly style="background: #f8f9fa;">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Kecamatan</label>
+                                <input type="text" class="form-control" id="infoKecamatan" readonly style="background: #f8f9fa;">
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Jenis Bantuan <span class="text-danger">*</span></label>
+                                <select class="form-select" name="jenis_bantuan" required>
+                                    <option value="">Pilih Jenis Bantuan</option>
+                                    <option>Bantuan Sosial Tunai (BST)</option>
+                                    <option>Alat Bantu Disabilitas (Kursi Roda, Alat Dengar, dll)</option>
+                                    <option>Rehabilitasi Sosial</option>
+                                    <option>Pelatihan Kerja / Keterampilan</option>
+                                    <option>Beasiswa Pendidikan</option>
+                                    <option>Bantuan Pangan / Sembako</option>
+                                    <option>Bantuan Rumah Tidak Layak Huni</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal Penyaluran</label>
+                                <input type="date" class="form-control" name="tanggal" value="<?php echo date('Y-m-d'); ?>">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nilai Bantuan (Rp)</label>
+                                <input type="number" class="form-control" name="nilai" placeholder="Contoh: 1000000" min="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Petugas Penyalur</label>
+                                <input type="text" class="form-control" name="petugas" placeholder="Nama petugas">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Status Awal</label>
+                                <select class="form-select" name="status">
+                                    <option value="Menunggu">Menunggu Persetujuan</option>
+                                    <option value="Proses">Dalam Proses</option>
+                                    <option value="Selesai">Selesai Disalurkan</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-save" onclick="submitBantuan()">
+                        <i class="bi bi-save me-1"></i>SIMPAN BANTUAN
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/helper.js"></script>
+    <script>
+        let dataBantuan = [];
+        let dataDisabilitas = [];
+
+        // Load saat halaman siap
+        document.addEventListener('DOMContentLoaded', async () => {
+            await populateKecamatan('filterKecamatan');
+            await loadDropdownDisabilitas();
+            await loadBantuan();
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Load dropdown disabilitas untuk modal
+        async function loadDropdownDisabilitas() {
+            const result = await getDisabilitas({});
+            if (result && result.success) {
+                dataDisabilitas = result.data;
+                const select = document.getElementById('selectPenerima');
+                select.innerHTML = '<option value="">-- Pilih dari daftar --</option>' + 
+                    result.data.map(d => `<option value="${d.id}" 
+                        data-nama="${d.nama || ''}" 
+                        data-nik="${d.nik || ''}" 
+                        data-kecamatan="${d.kecamatan || ''}">
+                        ${d.nama || '-'} - ${d.nik || '-'} (${d.kecamatan || '-'})
+                    </option>`).join('');
+            }
+        }
+
+        // Auto-fill data saat pilih penerima
+        function autoFillBantuan() {
+            const select = document.getElementById('selectPenerima');
+            const option = select.options[select.selectedIndex];
+            
+            if (!option || !option.value) {
+                document.getElementById('infoNama').value = '';
+                document.getElementById('infoNik').value = '';
+                document.getElementById('infoKecamatan').value = '';
+                return;
+            }
+
+            document.getElementById('infoNama').value = option.dataset.nama || '';
+            document.getElementById('infoNik').value = option.dataset.nik || '';
+            document.getElementById('infoKecamatan').value = option.dataset.kecamatan || '';
+        }
+
+        // Load data bantuan
+        async function loadBantuan() {
+            showLoading('Memuat data bantuan...');
+            
+            const cari = document.getElementById('filterCari').value;
+            const status = document.getElementById('filterStatus').value;
+            const kecamatan = document.getElementById('filterKecamatan').value;
+
+            const filters = {};
+            if (cari) filters.nama = cari;
+            if (status) filters.status = status;
+            if (kecamatan) filters.kecamatan = kecamatan;
+
+            const result = await getBantuan(filters);
+            hideLoading();
+            
+            if (result && result.success) {
+                dataBantuan = result.data;
+                renderBantuan(result.data);
+                updateStats(result.data);
+            } else {
+                showNotif('Gagal memuat data: ' + (result?.message || 'Unknown error'), 'danger');
+            }
+        }
+
+        // Render tabel bantuan
+        function renderBantuan(data) {
+            const tbody = document.getElementById('tbodyBantuan');
+            const info = document.getElementById('infoData');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Belum ada data bantuan</td></tr>';
+                info.textContent = 'Menampilkan 0 data';
+                return;
+            }
+
+            tbody.innerHTML = data.map((r, i) => {
+                let badgeStatus = 'bg-secondary';
+                if (r.status === 'Selesai') badgeStatus = 'bg-success';
+                else if (r.status === 'Proses') badgeStatus = 'bg-warning text-dark';
+                else if (r.status === 'Menunggu') badgeStatus = 'bg-danger';
+                
+                const nilai = r.nilai ? 'Rp ' + parseInt(r.nilai).toLocaleString('id-ID') : '-';
+                
+                return `<tr>
+                    <td>${i+1}</td>
+                    <td><strong>${r.nama || '-'}</strong></td>
+                    <td><small>${r.nik || '-'}</small></td>
+                    <td><small>${r.jenis_bantuan || '-'}</small></td>
+                    <td><small>${r.tanggal || '-'}</small></td>
+                    <td>${nilai}</td>
+                    <td>${r.kecamatan || '-'}</td>
+                    <td><span class="badge ${badgeStatus}">${r.status || 'Menunggu'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="updateStatus('${r.id}', '${r.status}')" title="Update Status">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+            
+            info.textContent = `Menampilkan ${data.length} data bantuan`;
+        }
+
+        // Update statistik
+        function updateStats(data) {
+            let selesai = 0, proses = 0, menunggu = 0;
+            data.forEach(r => {
+                if (r.status === 'Selesai') selesai++;
+                else if (r.status === 'Proses') proses++;
+                else menunggu++;
+            });
+            document.getElementById('statSelesai').textContent = selesai;
+            document.getElementById('statProses').textContent = proses;
+            document.getElementById('statMenunggu').textContent = menunggu;
+        }
+
+        // Submit bantuan
+        async function submitBantuan() {
+            const form = document.getElementById('formBantuan');
+            const data = Object.fromEntries(new FormData(form).entries());
+            
+            if (!data.disabilitas_id || !data.jenis_bantuan) {
+                showNotif('Pilih penerima dan jenis bantuan!', 'danger');
+                return;
+            }
+
+            const select = document.getElementById('selectPenerima');
+            const option = select.options[select.selectedIndex];
+            
+            data.nama = option.dataset.nama;
+            data.nik = option.dataset.nik;
+            data.kecamatan = option.dataset.kecamatan;
+            data.petugas = data.petugas || sessionStorage.getItem('userName') || 'Admin';
+
+            showLoading('Menyimpan data bantuan...');
+            const result = await saveBantuan(data);
+            hideLoading();
+
+            if (result && result.success) {
+                showNotif('✅ Bantuan berhasil dicatat!', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('modalBantuan')).hide();
+                form.reset();
+                loadBantuan();
+            } else {
+                showNotif('❌ Gagal: ' + (result?.message || 'Unknown error'), 'danger');
+            }
+        }
+
+        // Update status bantuan
+        async function updateStatus(id, currentStatus) {
+            const newStatus = prompt(`Update Status Bantuan (Saat ini: ${currentStatus})\n\nPilihan: Menunggu, Proses, Selesai`, currentStatus);
+            
+            if (newStatus && ['Menunggu', 'Proses', 'Selesai'].includes(newStatus)) {
+                showLoading('Mengupdate status...');
+                const result = await updateStatusBantuan({ id: id, status: newStatus });
+                hideLoading();
+                
+                if (result && result.success) {
+                    showNotif(`✅ Status berhasil diupdate menjadi: ${newStatus}`, 'success');
+                    loadBantuan();
+                } else {
+                    showNotif('❌ Gagal update status', 'danger');
+                }
+            } else if (newStatus !== null) {
+                showNotif('Status tidak valid! Gunakan: Menunggu, Proses, atau Selesai', 'warning');
+            }
+        }
+
+        // Export CSV
+        function exportBantuan() {
+            if (dataBantuan.length === 0) {
+                showNotif('Tidak ada data untuk diexport', 'warning');
+                return;
+            }
+            
+            const headers = ['No', 'Nama', 'NIK', 'Kecamatan', 'Jenis Bantuan', 'Tanggal', 'Nilai (Rp)', 'Status', 'Petugas'];
+            
+            let csv = headers.join(',') + '\n';
+            dataBantuan.forEach((r, i) => {
+                const row = [
+                    i+1,
+                    `"${r.nama || ''}"`,
+                    `"${r.nik || ''}"`,
+                    `"${r.kecamatan || ''}"`,
+                    `"${r.jenis_bantuan || ''}"`,
+                    r.tanggal || '',
+                    r.nilai || 0,
+                    `"${r.status || 'Menunggu'}"`,
+                    `"${r.petugas || ''}"`
+                ];
+                csv += row.join(',') + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Data_Bantuan_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotif('✅ Data bantuan berhasil diexport', 'success');
+        }
+    </script>
+</body>
+</html>

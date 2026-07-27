@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pimpinan - SIPEDULI BADUNG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <style>
+        /* Custom Styles for Pimpinan Page */
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+            background: linear-gradient(180deg, var(--primary-green, #28a745) 0%, var(--dark-green, #1e7e34) 100%);
+            z-index: 1000; overflow-y: auto; box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-orange, #fd7e14) 0%, var(--dark-orange, #e56b00) 100%);
+            border-bottom: 3px solid var(--white); padding: 20px; text-align: center;
+        }
+        .sidebar-header i { font-size: 2.5rem; color: var(--white); }
+        .sidebar-header h6, .sidebar-header small { color: var(--white) !important; margin: 0; }
+        .nav-link-sidebar {
+            display: flex; align-items: center; padding: 12px 20px;
+            color: rgba(255,255,255,0.9) !important; text-decoration: none;
+            transition: all 0.3s ease; border-left: 4px solid transparent; font-weight: 500;
+        }
+        .nav-link-sidebar:hover { background: rgba(255,255,255,0.15); border-left-color: var(--primary-orange); }
+        .nav-link-sidebar.active {
+            background: linear-gradient(90deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            border-left-color: var(--white); font-weight: 600;
+        }
+        .nav-link-sidebar i { width: 24px; margin-right: 12px; font-size: 1.1rem; }
+        .main-content { margin-left: 260px; min-height: 100vh; background-color: #f8f9fa; }
+        .top-navbar {
+            background: var(--white); min-height: 60px; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 3px solid var(--primary-green);
+            padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .top-navbar h5 { color: var(--dark-green, #1e7e34) !important; font-weight: 700; margin: 0; }
+        .content-area { padding: 30px; }
+        .card-custom {
+            border: none; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); background: var(--white);
+        }
+        .card-custom .card-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white) !important; border-bottom: 3px solid var(--primary-orange);
+            font-weight: 600; padding: 15px 20px; border-radius: 12px 12px 0 0;
+        }
+        .card-custom .card-header h5, .card-custom .card-header h6 { color: var(--white) !important; margin: 0; }
+        
+        /* Executive Stat Cards */
+        .exec-stat {
+            background: var(--white); border-radius: 12px; padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-left: 5px solid var(--primary-green);
+            transition: transform 0.3s ease;
+        }
+        .exec-stat:hover { transform: translateY(-3px); }
+        .exec-stat i { font-size: 2rem; opacity: 0.8; }
+        .exec-stat h2 { font-weight: 800; margin: 10px 0 5px 0; font-size: 2.2rem; }
+        .exec-stat small { color: #6c757d; font-weight: 500; }
+        .exec-stat.stat-green { border-left-color: #28a745; }
+        .exec-stat.stat-green i, .exec-stat.stat-green h2 { color: #28a745; }
+        .exec-stat.stat-orange { border-left-color: #fd7e14; }
+        .exec-stat.stat-orange i, .exec-stat.stat-orange h2 { color: #fd7e14; }
+        .exec-stat.stat-red { border-left-color: #dc3545; }
+        .exec-stat.stat-red i, .exec-stat.stat-red h2 { color: #dc3545; }
+        .exec-stat.stat-blue { border-left-color: #0dcaf0; }
+        .exec-stat.stat-blue i, .exec-stat.stat-blue h2 { color: #0dcaf0; }
+        .exec-stat.stat-dark { border-left-color: #343a40; }
+        .exec-stat.stat-dark i, .exec-stat.stat-dark h2 { color: #343a40; }
+
+        /* Map & Lists */
+        #mapPimpinan { height: 350px; border-radius: 8px; z-index: 1; }
+        .kecamatan-list-item {
+            padding: 12px 0; border-bottom: 1px solid #f0f0f0;
+        }
+        .kecamatan-list-item:last-child { border-bottom: none; }
+        .progress-thin { height: 6px; border-radius: 3px; background-color: #e9ecef; }
+        .progress-bar-thin { background: linear-gradient(90deg, var(--primary-green) 0%, var(--primary-orange) 100%); }
+        
+        .priority-item {
+            padding: 12px; border-left: 4px solid #dc3545; background: #fff5f5;
+            border-radius: 6px; margin-bottom: 10px; transition: all 0.2s;
+        }
+        .priority-item:hover { transform: translateX(5px); box-shadow: 0 2px 8px rgba(220,53,69,0.1); }
+        .priority-score {
+            background: #dc3545; color: white; padding: 2px 10px; border-radius: 20px;
+            font-weight: 700; font-size: 0.85rem;
+        }
+
+        .desil-bar-container {
+            display: flex; height: 20px; border-radius: 10px; overflow: hidden; margin: 15px 0;
+        }
+        .desil-segment { display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem; font-weight: 600; }
+        .desil-miskin { background: #dc3545; }
+        .desil-rentan { background: #fd7e14; }
+        .desil-aman { background: #28a745; }
+
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="bi bi-heart-pulse-fill"></i>
+            <h6 class="fw-bold mt-2">SIPEDULI BADUNG</h6>
+            <small>Dashboard Pimpinan</small>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link-sidebar"><i class="bi bi-speedometer2"></i>Dashboard</a>
+            <a href="data-disabilitas.html" class="nav-link-sidebar"><i class="bi bi-people"></i>Data Disabilitas</a>
+            <a href="asesmen.html" class="nav-link-sidebar"><i class="bi bi-clipboard2-check"></i>e-Asesmen</a>
+            <a href="bantuan.html" class="nav-link-sidebar"><i class="bi bi-gift"></i>Bantuan</a>
+            <a href="monitoring.html" class="nav-link-sidebar"><i class="bi bi-graph-up"></i>Monitoring</a>
+            <a href="peta.html" class="nav-link-sidebar"><i class="bi bi-geo-alt"></i>Peta Sebaran</a>
+            <a href="laporan.html" class="nav-link-sidebar"><i class="bi bi-file-earmark-bar-graph"></i>Laporan</a>
+            <a href="pimpinan.html" class="nav-link-sidebar active"><i class="bi bi-bar-chart-line"></i>Dashboard Pimpinan</a>
+            <hr class="text-white-50 mx-3">
+            <a href="login.html" class="nav-link-sidebar text-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i>Keluar</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-2" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h5><i class="bi bi-bar-chart-line-fill me-2"></i>Dashboard Eksekutif</h5>
+            </div>
+            <span class="badge" style="background: var(--primary-green);" id="currentDate"></span>
+        </nav>
+
+        <div class="content-area">
+            <!-- Executive Summary Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-xl col-md-4 col-6">
+                    <div class="exec-stat stat-green">
+                        <i class="bi bi-people-fill"></i>
+                        <h2 id="pTotal">0</h2>
+                        <small>Total Disabilitas</small>
+                    </div>
+                </div>
+                <div class="col-xl col-md-4 col-6">
+                    <div class="exec-stat stat-blue">
+                        <i class="bi bi-shield-check"></i>
+                        <h2 id="pDtks">0</h2>
+                        <small>Terdaftar DTKS</small>
+                    </div>
+                </div>
+                <div class="col-xl col-md-4 col-6">
+                    <div class="exec-stat stat-red">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <h2 id="pMiskin">0</h2>
+                        <small>Miskin Ekstrem (D1-3)</small>
+                    </div>
+                </div>
+                <div class="col-xl col-md-4 col-6">
+                    <div class="exec-stat stat-orange">
+                        <i class="bi bi-gift-fill"></i>
+                        <h2 id="pBantuan">0</h2>
+                        <small>Total Bantuan</small>
+                    </div>
+                </div>
+                <div class="col-xl col-md-4 col-6">
+                    <div class="exec-stat stat-dark">
+                        <i class="bi bi-percent"></i>
+                        <h2 id="pCakupan">0%</h2>
+                        <small>Cakupan DTKS</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map & Wilayah -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-7">
+                    <div class="card-custom h-100">
+                        <div class="card-header">
+                            <h6><i class="bi bi-geo-alt-fill me-2"></i>Peta Sebaran Wilayah</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="mapPimpinan"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="card-custom h-100">
+                        <div class="card-header">
+                            <h6><i class="bi bi-bar-chart-fill me-2"></i>Sebaran per Kecamatan</h6>
+                        </div>
+                        <div class="card-body p-3" id="listKecamatan">
+                            <p class="text-center text-muted py-5">Memuat data wilayah...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Priority & Demografi -->
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card-custom">
+                        <div class="card-header">
+                            <h6><i class="bi bi-exclamation-diamond-fill me-2"></i>Daftar Prioritas I (Urgent)</h6>
+                        </div>
+                        <div class="card-body" id="listPrioritas">
+                            <p class="text-center text-muted py-5">Memuat data prioritas...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card-custom">
+                        <div class="card-header">
+                            <h6><i class="bi bi-pie-chart-fill me-2"></i>Profil Kemiskinan (Desil)</h6>
+                        </div>
+                        <div class="card-body p-4" id="chartDesil">
+                            <p class="text-center text-muted py-5">Memuat profil demografi...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="assets/js/helper.js"></script>
+    <script>
+        const KECAMATAN_COORDS = {
+            'Kuta': [-8.7184, 115.1686], 'Kuta Selatan': [-8.8085, 115.1778],
+            'Kuta Utara': [-8.6481, 115.1722], 'Mengwi': [-8.5833, 115.1667],
+            'Abiansemal': [-8.5833, 115.2167], 'Petang': [-8.4667, 115.2000]
+        };
+
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); }
+        function logout() { sessionStorage.clear(); window.location.href = 'login.html'; }
+
+        async function loadPimpinan() {
+            showLoading('Memuat data eksekutif...');
+            try {
+                const [stats, analitik, prioritas] = await Promise.all([
+                    getStats(), getAnalitik(), getPrioritas()
+                ]);
+
+                // 1. Update Executive Stats
+                if (stats && stats.success) {
+                    document.getElementById('pTotal').textContent = stats.data.totalDisabilitas || 0;
+                    document.getElementById('pBantuan').textContent = stats.data.sudahBantuan || 0;
+                }
+
+                if (analitik && analitik.success) {
+                    const a = analitik.data;
+                    document.getElementById('pDtks').textContent = a.dtks.ya;
+                    
+                    const miskinEkstrem = Object.values(a.desil).slice(0, 3).reduce((x, y) => x + y, 0);
+                    document.getElementById('pMiskin').textContent = miskinEkstrem;
+                    
+                    const total = a.dtks.ya + a.dtks.tidak;
+                    const persen = total > 0 ? Math.round((a.dtks.ya/total)*100) : 0;
+                    document.getElementById('pCakupan').textContent = persen + '%';
+
+                    renderKecamatan(a.perKecamatan);
+                    renderDesil(a.desil, a.totalData);
+                }
+
+                // 2. Update Priority List
+                if (prioritas && prioritas.success) {
+                    const urgent = prioritas.data.filter(p => p.kategori_prioritas === 'PRIORITAS I').slice(0, 5);
+                    const container = document.getElementById('listPrioritas');
+                    if (urgent.length > 0) {
+                        container.innerHTML = urgent.map((p, i) => `
+                            <div class="priority-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>${i+1}. ${p.nama || 'Tanpa Nama'}</strong>
+                                        <div class="small text-muted">${p.kecamatan || '-'} • ${p.jenis_disabilitas_uu || '-'}</div>
+                                    </div>
+                                    <span class="priority-score">Skor: ${p.skor || 0}</span>
+                                </div>
+                                <div class="small mt-1"><i class="bi bi-pin-map me-1"></i>${p.rekomendasi || 'Segera ditindaklanjuti'}</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<p class="text-center text-muted py-4">Tidak ada data Prioritas I (Urgent)</p>';
+                    }
+                }
+
+                // 3. Render Map
+                renderMap(analitik);
+
+            } catch (error) {
+                console.error('Error loading dashboard pimpinan:', error);
+            }
+            hideLoading();
+        }
+
+        function renderKecamatan(perKecamatan) {
+            const container = document.getElementById('listKecamatan');
+            const keys = Object.keys(perKecamatan).sort();
+            if (keys.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted">Belum ada data wilayah</p>';
+                return;
+            }
+            const max = Math.max(...Object.values(perKecamatan).map(x => x.total));
+            let html = '';
+            keys.forEach(kec => {
+                const d = perKecamatan[kec];
+                const width = max > 0 ? (d.total / max) * 100 : 0;
+                html += `
+                    <div class="kecamatan-list-item">
+                        <div class="d-flex justify-content-between mb-1">
+                            <strong style="color: var(--dark-green);">${kec}</strong>
+                            <span class="badge" style="background: var(--primary-green);">${d.total} Jiwa</span>
+                        </div>
+                        <div class="progress progress-thin">
+                            <div class="progress-bar progress-bar-thin" style="width: ${width}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mt-1">
+                            <span>DTKS: ${d.dtks}</span>
+                            <span>Miskin: ${d.desilRendah}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderDesil(desilData, totalData) {
+            const container = document.getElementById('chartDesil');
+            const miskin = [1,2,3].reduce((s, i) => s + (desilData[i] || 0), 0);
+            const rentan = [4,5,6,7].reduce((s, i) => s + (desilData[i] || 0), 0);
+            const aman = [8,9,10].reduce((s, i) => s + (desilData[i] || 0), 0);
+            const total = miskin + rentan + aman;
+            
+            const pMiskin = total > 0 ? Math.round((miskin/total)*100) : 0;
+            const pRentan = total > 0 ? Math.round((rentan/total)*100) : 0;
+            const pAman = 100 - pMiskin - pRentan;
+
+            container.innerHTML = `
+                <div class="row text-center mb-4">
+                    <div class="col-4">
+                        <h3 class="fw-bold text-danger">${miskin}</h3>
+                        <small class="text-muted">Miskin (D1-3)</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="fw-bold" style="color: var(--primary-orange);">${rentan}</h3>
+                        <small class="text-muted">Rentan (D4-7)</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="fw-bold text-success">${aman}</h3>
+                        <small class="text-muted">Sejahtera (D8-10)</small>
+                    </div>
+                </div>
+                <h6 class="fw-bold mb-2" style="color: var(--dark-green);">Distribusi Tingkat Kemiskinan</h6>
+                <div class="desil-bar-container">
+                    <div class="desil-segment desil-miskin" style="width: ${pMiskin}%">${pMiskin}%</div>
+                    <div class="desil-segment desil-rentan" style="width: ${pRentan}%">${pRentan}%</div>
+                    <div class="desil-segment desil-aman" style="width: ${pAman}%">${pAman}%</div>
+                </div>
+                <p class="text-muted small text-center mt-3">Dari total <strong>${totalData || total}</strong> data penyandang disabilitas.</p>
+            `;
+        }
+
+        function renderMap(analitikResult) {
+            const map = L.map('mapPimpinan').setView([-8.6500, 115.1800], 11);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            if (analitikResult && analitikResult.success) {
+                const perKec = analitikResult.data.perKecamatan;
+                Object.keys(KECAMATAN_COORDS).forEach(kec => {
+                    const count = perKec[kec] ? perKec[kec].total : 0;
+                    const dtks = perKec[kec] ? perKec[kec].dtks : 0;
+                    const radius = Math.max(15, count * 2); // Ukuran bubble berdasarkan jumlah
+                    
+                    L.circleMarker(KECAMATAN_COORDS[kec], {
+                        radius: radius,
+                        fillColor: '#28a745',
+                        color: '#fff',
+                        weight: 2,
+                        fillOpacity: 0.7
+                    }).addTo(map).bindPopup(`
+                        <div style="min-width: 150px;">
+                            <h6 style="color: #1e7e34; font-weight: 700; margin-bottom: 8px;">Kecamatan ${kec}</h6>
+                            <div style="margin: 4px 0;"><strong>Total:</strong> ${count} Jiwa</div>
+                            <div style="margin: 4px 0;"><strong>DTKS:</strong> ${dtks} Jiwa</div>
+                        </div>
+                    `);
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPimpinan);
+    </script>
+</body>
+</html>

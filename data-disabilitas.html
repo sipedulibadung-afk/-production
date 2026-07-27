@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Disabilitas - SIPEDULI BADUNG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+            background: linear-gradient(180deg, var(--primary-green, #28a745) 0%, var(--dark-green, #1e7e34) 100%);
+            z-index: 1000; overflow-y: auto; box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-orange, #fd7e14) 0%, var(--dark-orange, #e56b00) 100%);
+            border-bottom: 3px solid var(--white); padding: 20px; text-align: center;
+        }
+        .sidebar-header i { font-size: 2.5rem; color: var(--white); }
+        .sidebar-header h6, .sidebar-header small { color: var(--white) !important; margin: 0; }
+        .nav-link-sidebar {
+            display: flex; align-items: center; padding: 12px 20px;
+            color: rgba(255,255,255,0.9) !important; text-decoration: none;
+            transition: all 0.3s ease; border-left: 4px solid transparent; font-weight: 500;
+        }
+        .nav-link-sidebar:hover { background: rgba(255,255,255,0.15); border-left-color: var(--primary-orange); }
+        .nav-link-sidebar.active {
+            background: linear-gradient(90deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            border-left-color: var(--white); font-weight: 600;
+        }
+        .nav-link-sidebar i { width: 24px; margin-right: 12px; font-size: 1.1rem; }
+        .main-content { margin-left: 260px; min-height: 100vh; background-color: #f8f9fa; }
+        .top-navbar {
+            background: var(--white); min-height: 60px; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 3px solid var(--primary-green);
+            padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .top-navbar h5 { color: var(--dark-green, #1e7e34) !important; font-weight: 700; margin: 0; }
+        .content-area { padding: 30px; }
+        .card-custom {
+            border: none; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); background: var(--white);
+        }
+        .card-custom .card-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white) !important; border-bottom: 3px solid var(--primary-orange);
+            font-weight: 600; padding: 15px 20px; border-radius: 12px 12px 0 0;
+        }
+        .table-custom thead {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+        }
+        .table-custom thead th {
+            color: var(--primary-green) !important; font-weight: 600; border: none;
+            padding: 12px; font-size: 0.85rem; white-space: nowrap;
+        }
+        .table-custom tbody td {
+            color: #212529 !important; vertical-align: middle;
+            padding: 10px; font-size: 0.9rem;
+        }
+        .table-custom tbody tr:hover { background-color: rgba(40, 167, 69, 0.05); }
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            color: white; border: none; padding: 8px 20px; border-radius: 8px;
+            font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-add:hover {
+            transform: translateY(-2px); color: white;
+            box-shadow: 0 4px 12px rgba(253, 126, 20, 0.4);
+        }
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white; border: none; padding: 10px 25px; border-radius: 8px;
+            font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px); color: white;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+        .form-section-title {
+            color: var(--dark-green); font-weight: 700; font-size: 1rem;
+            border-bottom: 2px solid var(--primary-green); padding-bottom: 8px;
+            margin-top: 20px; margin-bottom: 15px;
+        }
+        .form-section-title i { color: var(--primary-orange); }
+        .form-label { font-weight: 600; color: #495057; font-size: 0.9rem; }
+        .form-control, .form-select {
+            border: 2px solid #e9ecef; border-radius: 8px; padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+        .info-card {
+            background: linear-gradient(135deg, rgba(253, 126, 20, 0.1) 0%, rgba(253, 126, 20, 0.05) 100%);
+            border-left: 4px solid var(--primary-orange); padding: 15px;
+            border-radius: 8px; margin-bottom: 20px;
+        }
+        .info-card i { color: var(--primary-orange); font-size: 1.3rem; }
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="bi bi-heart-pulse-fill"></i>
+            <h6 class="fw-bold mt-2">SIPEDULI BADUNG</h6>
+            <small>Data Disabilitas</small>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link-sidebar"><i class="bi bi-speedometer2"></i>Dashboard</a>
+            <a href="data-disabilitas.html" class="nav-link-sidebar active"><i class="bi bi-people"></i>Data Disabilitas</a>
+            <a href="asesmen.html" class="nav-link-sidebar"><i class="bi bi-clipboard2-check"></i>e-Asesmen</a>
+            <a href="bantuan.html" class="nav-link-sidebar"><i class="bi bi-gift"></i>Bantuan</a>
+            <a href="monitoring.html" class="nav-link-sidebar"><i class="bi bi-graph-up"></i>Monitoring</a>
+            <a href="peta.html" class="nav-link-sidebar"><i class="bi bi-geo-alt"></i>Peta Sebaran</a>
+            <a href="laporan.html" class="nav-link-sidebar"><i class="bi bi-file-earmark-bar-graph"></i>Laporan</a>
+            <a href="pimpinan.html" class="nav-link-sidebar"><i class="bi bi-bar-chart-line"></i>Dashboard Pimpinan</a>
+            <hr class="text-white-50 mx-3">
+            <a href="login.html" class="nav-link-sidebar text-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i>Keluar</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-2" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h5><i class="bi bi-people me-2"></i>Data Penyandang Disabilitas</h5>
+            </div>
+            <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                <i class="bi bi-plus-circle me-1"></i>Tambah Data
+            </button>
+        </nav>
+
+        <div class="content-area">
+            <!-- Filter Section -->
+            <div class="card-custom mb-4">
+                <div class="card-body p-3">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Cari Nama/NIK</label>
+                            <input type="text" class="form-control" id="filterCari" placeholder="Ketik nama atau NIK...">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Kecamatan</label>
+                            <select class="form-select" id="filterKecamatan">
+                                <option value="">Semua</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Jenis Disabilitas</label>
+                            <select class="form-select" id="filterJenis">
+                                <option value="">Semua</option>
+                                <option>Disabilitas Fisik</option>
+                                <option>Disabilitas Intelektual</option>
+                                <option>Disabilitas Mental</option>
+                                <option>Disabilitas Sensorik</option>
+                                <option>Disabilitas Ganda</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">DTKS</label>
+                            <select class="form-select" id="filterDTKS">
+                                <option value="">Semua</option>
+                                <option>Ya</option>
+                                <option>Tidak</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-save w-100" onclick="loadDisabilitas()">
+                                <i class="bi bi-search me-1"></i>Cari & Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card-custom p-3 text-center">
+                        <i class="bi bi-people-fill" style="font-size: 2rem; color: var(--primary-green);"></i>
+                        <h4 class="fw-bold mt-2 mb-0" id="infoTotal">0</h4>
+                        <small class="text-muted">Total Data</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card-custom p-3 text-center">
+                        <i class="bi bi-shield-check" style="font-size: 2rem; color: var(--primary-orange);"></i>
+                        <h4 class="fw-bold mt-2 mb-0" id="infoDTKS">0</h4>
+                        <small class="text-muted">Terdaftar DTKS</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card-custom p-3 text-center">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 2rem; color: #dc3545;"></i>
+                        <h4 class="fw-bold mt-2 mb-0" id="infoDesilRendah">0</h4>
+                        <small class="text-muted">Desil 1-3 (Miskin)</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card-custom p-3 text-center">
+                        <i class="bi bi-geo-alt" style="font-size: 2rem; color: #0dcaf0;"></i>
+                        <h4 class="fw-bold mt-2 mb-0" id="infoKecamatan">0</h4>
+                        <small class="text-muted">Kecamatan Terdata</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Data -->
+            <div class="card-custom">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0"><i class="bi bi-table me-2"></i>Daftar Penyandang Disabilitas</h6>
+                    <button class="btn btn-sm btn-light" onclick="exportCSV()">
+                        <i class="bi bi-download me-1"></i>Export
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-custom table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama</th>
+                                    <th>NIK</th>
+                                    <th>Umur</th>
+                                    <th>JK</th>
+                                    <th>Kecamatan</th>
+                                    <th>Desa</th>
+                                    <th>Disabilitas</th>
+                                    <th>DTKS</th>
+                                    <th>Desil</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyDisabilitas">
+                                <tr><td colspan="11" class="text-center py-4">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <small class="text-muted" id="infoData">Menampilkan 0 data</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Data -->
+    <div class="modal fade" id="modalTambah" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); color: white; border-bottom: 3px solid var(--primary-orange);">
+                    <h5 class="modal-title"><i class="bi bi-person-plus-fill me-2"></i>Tambah Data Penyandang Disabilitas</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="info-card">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Info:</strong> Data yang disimpan akan otomatis dihitung umurnya dan dikirim notifikasi ke admin. Pastikan NIK diisi dengan benar (16 digit).
+                    </div>
+                    
+                    <form id="formDisabilitas">
+                        <!-- SECTION 1: DATA PRIBADI -->
+                        <h6 class="form-section-title"><i class="bi bi-person-fill me-2"></i>Data Pribadi</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="nama" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">NIK/KIA <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="nik" maxlength="16" pattern="[0-9]{16}" required>
+                                <small class="text-muted">16 digit angka</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nomor KK</label>
+                                <input type="text" class="form-control" name="kk" maxlength="16">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nama Ibu Kandung</label>
+                                <input type="text" class="form-control" name="nama_ibu">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Tempat Lahir</label>
+                                <input type="text" class="form-control" name="tempat_lahir">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Tanggal Lahir</label>
+                                <input type="date" class="form-control" name="tgl_lahir" onchange="hitungUmur()">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Umur</label>
+                                <input type="number" class="form-control" name="umur" id="umurOtomatis" readonly placeholder="Otomatis">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Jenis Kelamin</label>
+                                <select class="form-select" name="jenis_kelamin">
+                                    <option value="">Pilih</option>
+                                    <option>Laki-laki</option>
+                                    <option>Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">No. HP</label>
+                                <input type="tel" class="form-control" name="no_hp" placeholder="08xxxxxxxxxx">
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: ALAMAT -->
+                        <h6 class="form-section-title"><i class="bi bi-geo-alt-fill me-2"></i>Alamat</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Kecamatan <span class="text-danger">*</span></label>
+                                <select class="form-select" name="kecamatan" id="kecamatanForm" onchange="onKecamatanChange()" required>
+                                    <option value="">Pilih Kecamatan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Desa/Kelurahan <span class="text-danger">*</span></label>
+                                <select class="form-select" name="desa" id="desaForm" disabled required>
+                                    <option value="">Pilih Kecamatan terlebih dahulu</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Alamat Banjar/Jalan</label>
+                                <input type="text" class="form-control" name="alamat" placeholder="Contoh: Banjar Pekambingan, Jl. Raya Kuta No. 15">
+                            </div>
+                        </div>
+
+                        <!-- SECTION 3: PENDIDIKAN & PEKERJAAN -->
+                        <h6 class="form-section-title"><i class="bi bi-briefcase-fill me-2"></i>Pendidikan & Pekerjaan</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Pendidikan Terakhir</label>
+                                <select class="form-select" name="pendidikan">
+                                    <option value="">Pilih</option>
+                                    <option>Tidak Sekolah</option>
+                                    <option>SD/Sederajat</option>
+                                    <option>SMP/Sederajat</option>
+                                    <option>SMA/Sederajat</option>
+                                    <option>D1/D2/D3</option>
+                                    <option>S1/D4</option>
+                                    <option>S2</option>
+                                    <option>S3</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Pekerjaan</label>
+                                <input type="text" class="form-control" name="pekerjaan" placeholder="Contoh: Petani, Pedagang, IRT">
+                            </div>
+                        </div>
+
+                        <!-- SECTION 4: DATA DISABILITAS -->
+                        <h6 class="form-section-title"><i class="bi bi-heart-pulse-fill me-2"></i>Data Disabilitas</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Disabilitas Menurut UU No. 5 Tahun 2026 <span class="text-danger">*</span></label>
+                                <select class="form-select" name="jenis_disabilitas_uu" required>
+                                    <option value="">Pilih Jenis</option>
+                                    <option>Disabilitas Fisik</option>
+                                    <option>Disabilitas Intelektual</option>
+                                    <option>Disabilitas Mental</option>
+                                    <option>Disabilitas Sensorik</option>
+                                    <option>Disabilitas Ganda</option>
+                                </select>
+                                <small class="text-muted">Sesuai UU No. 5 Tahun 2026 tentang Penyandang Disabilitas</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Jenis Disabilitas Sesuai Suket</label>
+                                <input type="text" class="form-control" name="jenis_disabilitas_suket" placeholder="Sesuai Surat Keterangan Dokter">
+                            </div>
+                        </div>
+
+                        <!-- SECTION 5: DTKS & DESIL -->
+                        <h6 class="form-section-title"><i class="bi bi-shield-check me-2"></i>Data Kesejahteraan</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">DTKS (Data Terpadu Kesejahteraan Sosial)</label>
+                                <select class="form-select" name="dtks">
+                                    <option>Tidak</option>
+                                    <option>Ya</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Desil (Tingkat Kemiskinan)</label>
+                                <select class="form-select" name="desil">
+                                    <option value="">Pilih</option>
+                                    <option value="1">Desil 1 (Sangat Miskin)</option>
+                                    <option value="2">Desil 2 (Sangat Miskin)</option>
+                                    <option value="3">Desil 3 (Sangat Miskin)</option>
+                                    <option value="4">Desil 4 (Miskin)</option>
+                                    <option value="5">Desil 5 (Miskin)</option>
+                                    <option value="6">Desil 6 (Rentan)</option>
+                                    <option value="7">Desil 7 (Rentan)</option>
+                                    <option value="8">Desil 8 (Cukup)</option>
+                                    <option value="9">Desil 9 (Cukup)</option>
+                                    <option value="10">Desil 10 (Sejahtera)</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Keterangan</label>
+                                <textarea class="form-control" name="keterangan" rows="2" placeholder="Keterangan tambahan (opsional)"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-save" onclick="submitDisabilitas()">
+                        <i class="bi bi-save me-1"></i>SIMPAN DATA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/helper.js"></script>
+    <script>
+        let currentData = [];
+
+        // Load saat halaman siap
+        document.addEventListener('DOMContentLoaded', async () => {
+            await populateKecamatan('filterKecamatan');
+            await populateKecamatan('kecamatanForm');
+            loadDisabilitas();
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Hitung umur otomatis
+        function hitungUmur() {
+            const tglLahir = document.querySelector('input[name="tgl_lahir"]').value;
+            if (tglLahir) {
+                const birth = new Date(tglLahir);
+                const today = new Date();
+                let umur = today.getFullYear() - birth.getFullYear();
+                const m = today.getMonth() - birth.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) umur--;
+                document.getElementById('umurOtomatis').value = umur;
+            }
+        }
+
+        // Saat kecamatan berubah, load desa
+        async function onKecamatanChange() {
+            await populateDesa('desaForm', 'kecamatanForm');
+        }
+
+        // Load data disabilitas
+        async function loadDisabilitas() {
+            showLoading('Memuat data...');
+            
+            const cari = document.getElementById('filterCari').value;
+            const kecamatan = document.getElementById('filterKecamatan').value;
+            const jenis = document.getElementById('filterJenis').value;
+            const dtks = document.getElementById('filterDTKS').value;
+
+            const filters = {};
+            if (cari) filters.nama = cari;
+            if (kecamatan) filters.kecamatan = kecamatan;
+            if (jenis) filters.jenis_disabilitas_uu = jenis;
+            if (dtks) filters.dtks = dtks;
+
+            const result = await getDisabilitas(filters);
+            hideLoading();
+            
+            if (result && result.success) {
+                currentData = result.data;
+                renderDisabilitas(result.data);
+                updateInfoCards(result.data);
+            } else {
+                showNotif('Gagal memuat data: ' + (result?.message || 'Unknown error'), 'danger');
+            }
+        }
+
+        // Render tabel
+        function renderDisabilitas(data) {
+            const tbody = document.getElementById('tbodyDisabilitas');
+            const info = document.getElementById('infoData');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-4">Tidak ada data</td></tr>';
+                info.textContent = 'Menampilkan 0 data';
+                return;
+            }
+
+            tbody.innerHTML = data.map((r, i) => {
+                let badgeDTKS = String(r.dtks || '').toLowerCase() === 'ya' 
+                    ? '<span class="badge bg-success">Ya</span>' 
+                    : '<span class="badge bg-secondary">Tidak</span>';
+                
+                const desil = parseInt(r.desil) || 0;
+                let badgeDesil = '<span class="badge bg-secondary">-</span>';
+                if (desil > 0) {
+                    if (desil <= 3) badgeDesil = `<span class="badge bg-danger">Desil ${desil}</span>`;
+                    else if (desil <= 5) badgeDesil = `<span class="badge bg-warning text-dark">Desil ${desil}</span>`;
+                    else if (desil <= 7) badgeDesil = `<span class="badge bg-info">Desil ${desil}</span>`;
+                    else badgeDesil = `<span class="badge bg-success">Desil ${desil}</span>`;
+                }
+                
+                return `<tr>
+                    <td>${i+1}</td>
+                    <td><strong>${r.nama || '-'}</strong></td>
+                    <td><small>${r.nik || '-'}</small></td>
+                    <td>${r.umur || '-'}</td>
+                    <td>${r.jenis_kelamin ? (r.jenis_kelamin === 'Laki-laki' ? 'L' : 'P') : '-'}</td>
+                    <td>${r.kecamatan || '-'}</td>
+                    <td>${r.desa || '-'}</td>
+                    <td><span class="badge" style="background: var(--primary-green);">${r.jenis_disabilitas_uu || '-'}</span></td>
+                    <td>${badgeDTKS}</td>
+                    <td>${badgeDesil}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info" onclick="viewDetail('${r.id}')" title="Detail">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="hapusDisabilitas('${r.id}')" title="Hapus">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+            
+            info.textContent = `Menampilkan ${data.length} data`;
+        }
+
+        // Update info cards
+        function updateInfoCards(data) {
+            document.getElementById('infoTotal').textContent = data.length;
+            
+            const dtksCount = data.filter(d => String(d.dtks || '').toLowerCase() === 'ya').length;
+            document.getElementById('infoDTKS').textContent = dtksCount;
+            
+            const desilRendah = data.filter(d => parseInt(d.desil) <= 3).length;
+            document.getElementById('infoDesilRendah').textContent = desilRendah;
+            
+            const kecamatanList = [...new Set(data.map(d => d.kecamatan).filter(Boolean))];
+            document.getElementById('infoKecamatan').textContent = kecamatanList.length;
+        }
+
+        // Submit form
+        async function submitDisabilitas() {
+            const form = document.getElementById('formDisabilitas');
+            const data = Object.fromEntries(new FormData(form).entries());
+
+            if (!data.nama || !data.nik || !data.kecamatan || !data.desa || !data.jenis_disabilitas_uu) {
+                showNotif('Lengkapi data wajib (Nama, NIK, Kecamatan, Desa, Jenis Disabilitas)!', 'danger');
+                return;
+            }
+
+            if (data.nik && data.nik.length !== 16) {
+                showNotif('NIK harus 16 digit!', 'danger');
+                return;
+            }
+
+            showLoading('Menyimpan data...');
+            const result = await saveDisabilitas(data);
+            hideLoading();
+
+            if (result && result.success) {
+                showNotif('✅ Data berhasil disimpan! Email notifikasi telah dikirim.', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('modalTambah')).hide();
+                form.reset();
+                document.getElementById('desaForm').disabled = true;
+                document.getElementById('desaForm').innerHTML = '<option value="">Pilih Kecamatan terlebih dahulu</option>';
+                loadDisabilitas();
+            } else {
+                showNotif('❌ Gagal: ' + (result?.message || 'Unknown error'), 'danger');
+            }
+        }
+
+        // Hapus data
+        async function hapusDisabilitas(id) {
+            if (!confirm('Yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.')) return;
+            
+            showLoading('Menghapus data...');
+            const result = await deleteDisabilitas(id);
+            hideLoading();
+            
+            if (result && result.success) {
+                showNotif('✅ Data berhasil dihapus', 'success');
+                loadDisabilitas();
+            } else {
+                showNotif('❌ Gagal menghapus: ' + (result?.message || ''), 'danger');
+            }
+        }
+
+        // View detail (placeholder)
+        function viewDetail(id) {
+            const data = currentData.find(d => d.id === id);
+            if (!data) return;
+            
+            const detail = `
+👤 DETAIL DATA PENYANDANG DISABILITAS
+
+📋 DATA PRIBADI:
+• Nama: ${data.nama || '-'}
+• NIK: ${data.nik || '-'}
+• KK: ${data.kk || '-'}
+• Tempat/Tgl Lahir: ${data.tempat_lahir || '-'}, ${data.tgl_lahir || '-'}
+• Umur: ${data.umur || '-'} tahun
+• Jenis Kelamin: ${data.jenis_kelamin || '-'}
+• No. HP: ${data.no_hp || '-'}
+
+🏠 ALAMAT:
+• Kecamatan: ${data.kecamatan || '-'}
+• Desa: ${data.desa || '-'}
+• Alamat: ${data.alamat || '-'}
+
+💼 PENDIDIKAN & PEKERJAAN:
+• Pendidikan: ${data.pendidikan || '-'}
+• Pekerjaan: ${data.pekerjaan || '-'}
+
+♿ DISABILITAS:
+• Jenis (UU 5/2026): ${data.jenis_disabilitas_uu || '-'}
+• Jenis (Suket): ${data.jenis_disabilitas_suket || '-'}
+
+🛡️ KESEJAHTERAAN:
+• DTKS: ${data.dtks || 'Tidak'}
+• Desil: ${data.desil || '-'}
+• Ibu Kandung: ${data.nama_ibu || '-'}
+
+📝 Keterangan: ${data.keterangan || '-'}
+            `;
+            
+            alert(detail);
+        }
+
+        // Export CSV
+        function exportCSV() {
+            if (currentData.length === 0) {
+                showNotif('Tidak ada data untuk diexport', 'warning');
+                return;
+            }
+            
+            const headers = ['No', 'Nama', 'NIK', 'KK', 'Tempat Lahir', 'Tgl Lahir', 'Umur', 'JK', 'Kecamatan', 'Desa', 'Alamat', 'No HP', 'Pendidikan', 'Pekerjaan', 'Disabilitas UU', 'Disabilitas Suket', 'Ibu Kandung', 'DTKS', 'Desil', 'Keterangan'];
+            
+            let csv = headers.join(',') + '\n';
+            currentData.forEach((r, i) => {
+                const row = [
+                    i+1,
+                    `"${r.nama || ''}"`,
+                    `"${r.nik || ''}"`,
+                    `"${r.kk || ''}"`,
+                    `"${r.tempat_lahir || ''}"`,
+                    r.tgl_lahir || '',
+                    r.umur || '',
+                    `"${r.jenis_kelamin || ''}"`,
+                    `"${r.kecamatan || ''}"`,
+                    `"${r.desa || ''}"`,
+                    `"${r.alamat || ''}"`,
+                    `"${r.no_hp || ''}"`,
+                    `"${r.pendidikan || ''}"`,
+                    `"${r.pekerjaan || ''}"`,
+                    `"${r.jenis_disabilitas_uu || ''}"`,
+                    `"${r.jenis_disabilitas_suket || ''}"`,
+                    `"${r.nama_ibu || ''}"`,
+                    r.dtks || 'Tidak',
+                    r.desil || '',
+                    `"${(r.keterangan || '').replace(/"/g, '""')}"`
+                ];
+                csv += row.join(',') + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Data_Disabilitas_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotif('✅ Data berhasil diexport', 'success');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-Asesmen - SIPEDULI BADUNG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <style>
+        /* Override Theme to Green/Orange */
+        :root {
+            --primary-green: #28a745;
+            --dark-green: #1e7e34;
+            --light-green: rgba(40, 167, 69, 0.1);
+            --primary-orange: #fd7e14;
+            --dark-orange: #e56b00;
+            --light-orange: rgba(253, 126, 20, 0.1);
+        }
+        
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+            background: linear-gradient(180deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            z-index: 1000; overflow-y: auto; box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            border-bottom: 3px solid #fff; padding: 20px; text-align: center;
+        }
+        .sidebar-header i { font-size: 2.5rem; color: #fff; }
+        .sidebar-header h6, .sidebar-header small { color: #fff !important; margin: 0; }
+        .nav-link-sidebar {
+            display: flex; align-items: center; padding: 12px 20px;
+            color: rgba(255,255,255,0.9) !important; text-decoration: none;
+            transition: all 0.3s ease; border-left: 4px solid transparent; font-weight: 500;
+        }
+        .nav-link-sidebar:hover { background: rgba(255,255,255,0.15); border-left-color: var(--primary-orange); }
+        .nav-link-sidebar.active {
+            background: linear-gradient(90deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            border-left-color: #fff; font-weight: 600;
+        }
+        .nav-link-sidebar i { width: 24px; margin-right: 12px; font-size: 1.1rem; }
+        .main-content { margin-left: 260px; min-height: 100vh; background-color: #f8f9fa; }
+        .top-navbar {
+            background: #fff; min-height: 60px; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 3px solid var(--primary-green);
+            padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .top-navbar h5 { color: var(--dark-green) !important; font-weight: 700; margin: 0; }
+        .content-area { padding: 30px; }
+        .card-custom {
+            border: none; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); background: #fff;
+        }
+        .card-custom .card-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: #fff !important; border-bottom: 3px solid var(--primary-orange);
+            font-weight: 600; padding: 15px 20px; border-radius: 12px 12px 0 0;
+        }
+        .card-custom .card-header h5, .card-custom .card-header h6 { color: #fff !important; margin: 0; }
+        .table-custom thead {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+        }
+        .table-custom thead th {
+            color: #212529 !important; font-weight: 600; border: none;
+            padding: 12px; font-size: 0.85rem;
+        }
+        .table-custom tbody td {
+            color: #212529 !important; vertical-align: middle; padding: 10px; font-size: 0.9rem;
+        }
+        .table-custom tbody tr:hover { background-color: rgba(40, 167, 69, 0.05); }
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            color: #28a745; border: none; padding: 8px 20px; border-radius: 8px;
+            font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-add:hover {
+            transform: translateY(-2px); color: #fff;
+            box-shadow: 0 4px 12px rgba(253, 126, 20, 0.4);
+        }
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: #fff; border: none; padding: 10px 25px; border-radius: 8px;
+            font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px); color: #fff;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+        .form-label { font-weight: 600; color: #495057; font-size: 0.9rem; }
+        .form-control, .form-select {
+            border: 2px solid #e9ecef; border-radius: 8px; padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+        .info-card {
+            background: linear-gradient(135deg, rgba(253, 126, 20, 0.1) 0%, rgba(253, 126, 20, 0.05) 100%);
+            border-left: 4px solid var(--primary-orange); padding: 15px;
+            border-radius: 8px; margin-bottom: 20px;
+        }
+        .info-card i { color: var(--primary-orange); font-size: 1.3rem; }
+        .skor-preview {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: #fff; border-radius: 12px; padding: 20px;
+            text-align: center; margin-top: 15px;
+        }
+        .skor-preview .skor-angka { font-size: 3rem; font-weight: 800; line-height: 1; }
+        .skor-preview .skor-label { font-size: 0.9rem; opacity: 0.9; }
+        .skor-preview .kategori-badge {
+            display: inline-block; padding: 5px 15px; border-radius: 20px;
+            background: var(--primary-orange); font-weight: 700; margin-top: 10px;
+        }
+        .stat-box {
+            background: #fff; border-radius: 12px; padding: 20px;
+            text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--primary-green); transition: all 0.3s ease;
+        }
+        .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+        .stat-box i { font-size: 2rem; margin-bottom: 10px; }
+        .stat-box h3 { font-weight: 800; margin: 10px 0 5px 0; }
+        .stat-box small { color: #6c757d; font-size: 0.85rem; }
+        .stat-box.prioritas-1 { border-top-color: #dc3545; }
+        .stat-box.prioritas-1 i, .stat-box.prioritas-1 h3 { color: #dc3545; }
+        .stat-box.prioritas-2 { border-top-color: var(--primary-orange); }
+        .stat-box.prioritas-2 i, .stat-box.prioritas-2 h3 { color: var(--primary-orange); }
+        .stat-box.prioritas-3 { border-top-color: var(--primary-green); }
+        .stat-box.prioritas-3 i, .stat-box.prioritas-3 h3 { color: var(--primary-green); }
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="bi bi-heart-pulse-fill"></i>
+            <h6 class="fw-bold mt-2">SIPEDULI BADUNG</h6>
+            <small>e-Asesmen</small>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link-sidebar"><i class="bi bi-speedometer2"></i>Dashboard</a>
+            <a href="data-disabilitas.html" class="nav-link-sidebar"><i class="bi bi-people"></i>Data Disabilitas</a>
+            <a href="asesmen.html" class="nav-link-sidebar active"><i class="bi bi-clipboard2-check"></i>e-Asesmen</a>
+            <a href="bantuan.html" class="nav-link-sidebar"><i class="bi bi-gift"></i>Bantuan</a>
+            <a href="monitoring.html" class="nav-link-sidebar"><i class="bi bi-graph-up"></i>Monitoring</a>
+            <a href="peta.html" class="nav-link-sidebar"><i class="bi bi-geo-alt"></i>Peta Sebaran</a>
+            <a href="laporan.html" class="nav-link-sidebar"><i class="bi bi-file-earmark-bar-graph"></i>Laporan</a>
+            <a href="pimpinan.html" class="nav-link-sidebar"><i class="bi bi-bar-chart-line"></i>Dashboard Pimpinan</a>
+            <hr class="text-white-50 mx-3">
+            <a href="login.html" class="nav-link-sidebar text-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i>Keluar</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-2" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h5><i class="bi bi-clipboard2-check me-2"></i>e-Asesmen Kebutuhan</h5>
+            </div>
+            <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#modalAsesmen">
+                <i class="bi bi-plus-circle me-1"></i>Asesmen Baru
+            </button>
+        </nav>
+
+        <div class="content-area">
+            <!-- Info Card -->
+            <div class="info-card">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong>Tentang e-Asesmen:</strong> Sistem ini menghitung skor prioritas secara otomatis berdasarkan:
+                <strong>DTKS (30 poin)</strong> + <strong>Desil (40 poin)</strong> + <strong>Jenis Disabilitas (30 poin)</strong> = <strong>Maksimal 100 poin</strong>.
+                Skor ≥ 80 = Prioritas I (Urgent), 60-79 = Prioritas II (Segera), &lt; 60 = Prioritas III (Reguler).
+            </div>
+
+            <!-- Stat Boxes -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="stat-box prioritas-1">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <h3 id="statP1">0</h3>
+                        <small>Prioritas I (Urgent)</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-box prioritas-2">
+                        <i class="bi bi-hourglass-split"></i>
+                        <h3 id="statP2">0</h3>
+                        <small>Prioritas II (Segera)</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-box prioritas-3">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <h3 id="statP3">0</h3>
+                        <small>Prioritas III (Reguler)</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter -->
+            <div class="card-custom mb-4">
+                <div class="card-body p-3">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Cari Nama/NIK</label>
+                            <input type="text" class="form-control" id="filterCari" placeholder="Ketik nama atau NIK...">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Kategori Prioritas</label>
+                            <select class="form-select" id="filterKategori">
+                                <option value="">Semua</option>
+                                <option>PRIORITAS I</option>
+                                <option>PRIORITAS II</option>
+                                <option>PRIORITAS III</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Kecamatan</label>
+                            <select class="form-select" id="filterKecamatan">
+                                <option value="">Semua</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button class="btn btn-save w-100" onclick="loadAsesmen()">
+                                <i class="bi bi-search me-1"></i>Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Hasil Asesmen -->
+            <div class="card-custom">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6><i class="bi bi-list-check me-2"></i>Hasil Asesmen & Skoring</h6>
+                    <button class="btn btn-sm btn-light" onclick="exportAsesmen()">
+                        <i class="bi bi-download me-1"></i>Export
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-custom table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama</th>
+                                    <th>NIK</th>
+                                    <th>Kecamatan</th>
+                                    <th>DTKS</th>
+                                    <th>Desil</th>
+                                    <th>Jenis Disabilitas</th>
+                                    <th>Skor</th>
+                                    <th>Kategori</th>
+                                    <th>Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyAsesmen">
+                                <tr><td colspan="10" class="text-center py-4">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <small class="text-muted" id="infoData">Menampilkan 0 data</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Asesmen Baru -->
+    <div class="modal fade" id="modalAsesmen" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%); color: #fff; border-bottom: 3px solid var(--primary-orange);">
+                    <h5 class="modal-title"><i class="bi bi-clipboard2-check me-2"></i>Form e-Asesmen Kebutuhan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="info-card">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Info:</strong> Pilih penyandang disabilitas dari daftar. Data akan otomatis terisi dan skor dihitung secara otomatis.
+                    </div>
+                    
+                    <form id="formAsesmen">
+                        <div class="mb-3">
+                            <label class="form-label">Pilih Penyandang Disabilitas <span class="text-danger">*</span></label>
+                            <select class="form-select" name="disabilitas_id" id="selectDisabilitas" required onchange="autoFillAsesmen()">
+                                <option value="">-- Pilih dari daftar --</option>
+                            </select>
+                        </div>
+
+                        <!-- Data Auto-Fill (Readonly) -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama</label>
+                                <input type="text" class="form-control" id="infoNama" readonly style="background: #f8f9fa;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">NIK</label>
+                                <input type="text" class="form-control" id="infoNik" readonly style="background: #f8f9fa;">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Kecamatan</label>
+                                <input type="text" class="form-control" id="infoKecamatan" readonly style="background: #f8f9fa;">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status DTKS</label>
+                                <input type="text" class="form-control" id="infoDtks" readonly style="background: #f8f9fa;">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Desil</label>
+                                <input type="text" class="form-control" id="infoDesil" readonly style="background: #f8f9fa;">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Jenis Disabilitas (UU No. 5/2026)</label>
+                                <input type="text" class="form-control" id="infoJenis" readonly style="background: #f8f9fa;">
+                            </div>
+                        </div>
+
+                        <!-- Preview Skor -->
+                        <div class="skor-preview" id="skorPreview" style="display: none;">
+                            <div class="skor-label">SKOR PRIORITAS</div>
+                            <div class="skor-angka" id="previewSkor">0</div>
+                            <div class="skor-label">dari 100 poin</div>
+                            <div class="kategori-badge" id="previewKategori">-</div>
+                            <div class="mt-3" style="font-size: 0.85rem; opacity: 0.9;">
+                                <div>DTKS: <span id="skorDtks">0</span> poin | Desil: <span id="skorDesil">0</span> poin | Disabilitas: <span id="skorJenis">0</span> poin</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 mt-3">
+                            <label class="form-label">Rekomendasi Asesor</label>
+                            <textarea class="form-control" name="rekomendasi" rows="3" placeholder="Contoh: Prioritas bantuan alat bantu jalan dan pendampingan keluarga"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-save" onclick="submitAsesmen()">
+                        <i class="bi bi-calculator me-1"></i>HITUNG SKOR & SIMPAN
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/helper.js"></script>
+    <script>
+        let dataAsesmen = [];
+        let dataDisabilitas = [];
+        let mapDisabilitasByNik = {};
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await populateKecamatan('filterKecamatan');
+            await loadAllDisabilitas();
+            await loadDropdownDisabilitas();
+            await loadAsesmen();
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Load semua data disabilitas untuk lookup
+        async function loadAllDisabilitas() {
+            const result = await getDisabilitas({});
+            if (result && result.success) {
+                dataDisabilitas = result.data;
+                mapDisabilitasByNik = {};
+                result.data.forEach(d => {
+                    if (d.nik) {
+                        mapDisabilitasByNik[String(d.nik).trim()] = d;
+                    }
+                });
+                console.log('✅ Loaded', result.data.length, 'data disabilitas untuk lookup');
+            }
+        }
+
+        // Load dropdown disabilitas untuk modal
+        async function loadDropdownDisabilitas() {
+            const result = await getDisabilitas({});
+            if (result && result.success) {
+                const select = document.getElementById('selectDisabilitas');
+                select.innerHTML = '<option value="">-- Pilih dari daftar --</option>' + 
+                    result.data.map(d => `<option value="${d.id}" 
+                        data-nama="${d.nama || ''}" 
+                        data-nik="${d.nik || ''}" 
+                        data-kecamatan="${d.kecamatan || ''}" 
+                        data-dtks="${d.dtks || 'Tidak'}" 
+                        data-desil="${d.desil || '10'}" 
+                        data-jenis="${d.jenis_disabilitas_uu || ''}">
+                        ${d.nama || '-'} - ${d.nik || '-'} (${d.kecamatan || '-'})
+                    </option>`).join('');
+            }
+        }
+
+        function autoFillAsesmen() {
+            const select = document.getElementById('selectDisabilitas');
+            const option = select.options[select.selectedIndex];
+            
+            if (!option || !option.value) {
+                document.getElementById('infoNama').value = '';
+                document.getElementById('infoNik').value = '';
+                document.getElementById('infoKecamatan').value = '';
+                document.getElementById('infoDtks').value = '';
+                document.getElementById('infoDesil').value = '';
+                document.getElementById('infoJenis').value = '';
+                document.getElementById('skorPreview').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('infoNama').value = option.dataset.nama || '';
+            document.getElementById('infoNik').value = option.dataset.nik || '';
+            document.getElementById('infoKecamatan').value = option.dataset.kecamatan || '';
+            document.getElementById('infoDtks').value = option.dataset.dtks || 'Tidak';
+            document.getElementById('infoDesil').value = option.dataset.desil || '10';
+            document.getElementById('infoJenis').value = option.dataset.jenis || '';
+
+            hitungPreviewSkor();
+        }
+
+        function hitungPreviewSkor() {
+            const dtks = document.getElementById('infoDtks').value;
+            const desil = parseInt(document.getElementById('infoDesil').value) || 10;
+            const jenis = (document.getElementById('infoJenis').value || '').toLowerCase();
+
+            let skorDtks = String(dtks).toLowerCase() === 'ya' ? 30 : 0;
+
+            let skorDesil = 10;
+            if (desil <= 3) skorDesil = 40;
+            else if (desil <= 5) skorDesil = 30;
+            else if (desil <= 7) skorDesil = 20;
+
+            let skorJenis = 10;
+            if (jenis.includes('berat') || jenis.includes('ganda')) skorJenis = 30;
+            else if (jenis.includes('sedang')) skorJenis = 20;
+
+            const totalSkor = skorDtks + skorDesil + skorJenis;
+
+            let kategori = 'PRIORITAS III';
+            let kategoriColor = '#28a745';
+            if (totalSkor >= 80) { kategori = 'PRIORITAS I (URGENT)'; kategoriColor = '#dc3545'; }
+            else if (totalSkor >= 60) { kategori = 'PRIORITAS II (SEGERA)'; kategoriColor = '#fd7e14'; }
+
+            document.getElementById('previewSkor').textContent = totalSkor;
+            document.getElementById('previewKategori').textContent = kategori;
+            document.getElementById('previewKategori').style.background = kategoriColor;
+            document.getElementById('skorDtks').textContent = skorDtks;
+            document.getElementById('skorDesil').textContent = skorDesil;
+            document.getElementById('skorJenis').textContent = skorJenis;
+            document.getElementById('skorPreview').style.display = 'block';
+        }
+
+        async function loadAsesmen() {
+            showLoading('Memuat data asesmen...');
+            
+            const cari = document.getElementById('filterCari').value;
+            const kategori = document.getElementById('filterKategori').value;
+            const kecamatan = document.getElementById('filterKecamatan').value;
+
+            const filters = {};
+            if (cari) filters.nama = cari;
+            if (kategori) filters.kategori_prioritas = kategori;
+
+            const result = await getAsesmen(filters);
+            hideLoading();
+            
+            if (result && result.success) {
+                dataAsesmen = result.data;
+                
+                let filteredData = result.data;
+                if (kecamatan) {
+                    filteredData = result.data.filter(r => {
+                        const dataLengkap = cariDataDisabilitas(r.nik);
+                        return dataLengkap && dataLengkap.kecamatan === kecamatan;
+                    });
+                }
+                
+                renderAsesmen(filteredData);
+                updateStats(filteredData);
+            } else {
+                showNotif('Gagal memuat data: ' + (result?.message || 'Unknown error'), 'danger');
+            }
+        }
+
+        function cariDataDisabilitas(nik) {
+            if (!nik) return null;
+            return mapDisabilitasByNik[String(nik).trim()] || null;
+        }
+
+        function renderAsesmen(data) {
+            const tbody = document.getElementById('tbodyAsesmen');
+            const info = document.getElementById('infoData');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">Belum ada data asesmen</td></tr>';
+                info.textContent = 'Menampilkan 0 data';
+                return;
+            }
+
+            tbody.innerHTML = data.map((r, i) => {
+                const dataLengkap = cariDataDisabilitas(r.nik);
+                
+                const kecamatan = (dataLengkap && dataLengkap.kecamatan) || r.kecamatan || '-';
+                const dtks = (dataLengkap && dataLengkap.dtks) || r.dtks || 'Tidak';
+                const desil = (dataLengkap && dataLengkap.desil) || r.desil || '-';
+                const jenisDisabilitas = (dataLengkap && dataLengkap.jenis_disabilitas_uu) || r.jenis_disabilitas_uu || '-';
+
+                let badgeKategori = 'bg-success';
+                if (r.kategori_prioritas === 'PRIORITAS I') badgeKategori = 'bg-danger';
+                else if (r.kategori_prioritas === 'PRIORITAS II') badgeKategori = 'bg-warning text-dark';
+                
+                let badgeDTKS = String(dtks).toLowerCase() === 'ya' 
+                    ? '<span class="badge bg-success">Ya</span>' 
+                    : '<span class="badge bg-secondary">Tidak</span>';
+                
+                const desilNum = parseInt(desil) || 0;
+                let badgeDesil = '<span class="badge bg-secondary">-</span>';
+                if (desilNum > 0) {
+                    if (desilNum <= 3) badgeDesil = `<span class="badge bg-danger">${desilNum}</span>`;
+                    else if (desilNum <= 5) badgeDesil = `<span class="badge bg-warning text-dark">${desilNum}</span>`;
+                    else badgeDesil = `<span class="badge bg-info">${desilNum}</span>`;
+                }
+                
+                const tanggal = r.tanggal_asesmen ? (r.tanggal_asesmen.split ? r.tanggal_asesmen.split('T')[0] : r.tanggal_asesmen) : '-';
+                
+                return `<tr>
+                    <td>${i+1}</td>
+                    <td><strong>${r.nama || '-'}</strong></td>
+                    <td><small>${r.nik || '-'}</small></td>
+                    <td>${kecamatan}</td>
+                    <td>${badgeDTKS}</td>
+                    <td>${badgeDesil}</td>
+                    <td><small>${jenisDisabilitas}</small></td>
+                    <td><span class="badge" style="background: var(--primary-green); font-size: 1rem;">${r.skor || 0}</span></td>
+                    <td><span class="badge ${badgeKategori}">${r.kategori_prioritas || '-'}</span></td>
+                    <td><small>${tanggal}</small></td>
+                </tr>`;
+            }).join('');
+            
+            info.textContent = `Menampilkan ${data.length} data asesmen`;
+        }
+
+        function updateStats(data) {
+            let p1 = 0, p2 = 0, p3 = 0;
+            data.forEach(r => {
+                if (r.kategori_prioritas === 'PRIORITAS I') p1++;
+                else if (r.kategori_prioritas === 'PRIORITAS II') p2++;
+                else p3++;
+            });
+            document.getElementById('statP1').textContent = p1;
+            document.getElementById('statP2').textContent = p2;
+            document.getElementById('statP3').textContent = p3;
+        }
+
+        async function submitAsesmen() {
+            const form = document.getElementById('formAsesmen');
+            const data = Object.fromEntries(new FormData(form).entries());
+            
+            if (!data.disabilitas_id) {
+                showNotif('Pilih penyandang disabilitas terlebih dahulu!', 'danger');
+                return;
+            }
+
+            const select = document.getElementById('selectDisabilitas');
+            const option = select.options[select.selectedIndex];
+            
+            data.nama = option.dataset.nama;
+            data.nik = option.dataset.nik;
+            data.kecamatan = option.dataset.kecamatan;
+            data.dtks = option.dataset.dtks;
+            data.desil = option.dataset.desil;
+            data.jenis_disabilitas_uu = option.dataset.jenis;
+            data.tanggal_asesmen = new Date().toISOString().split('T')[0];
+            data.asesor = sessionStorage.getItem('userName') || 'Admin';
+
+            showLoading('Menghitung skor & menyimpan...');
+            const result = await saveAsesmen(data);
+            hideLoading();
+
+            if (result && result.success) {
+                showNotif(`✅ Asesmen berhasil! Skor: ${result.skor} - ${result.kategori}`, 'success');
+                bootstrap.Modal.getInstance(document.getElementById('modalAsesmen')).hide();
+                form.reset();
+                document.getElementById('skorPreview').style.display = 'none';
+                
+                await loadAllDisabilitas();
+                await loadAsesmen();
+            } else {
+                showNotif('❌ Gagal: ' + (result?.message || 'Unknown error'), 'danger');
+            }
+        }
+
+        function exportAsesmen() {
+            if (dataAsesmen.length === 0) {
+                showNotif('Tidak ada data untuk diexport', 'warning');
+                return;
+            }
+            
+            const headers = ['No', 'Nama', 'NIK', 'Kecamatan', 'DTKS', 'Desil', 'Jenis Disabilitas', 'Skor', 'Kategori Prioritas', 'Tanggal Asesmen', 'Asesor', 'Rekomendasi'];
+            
+            let csv = '\uFEFF' + headers.join(',') + '\n';
+            dataAsesmen.forEach((r, i) => {
+                const dataLengkap = cariDataDisabilitas(r.nik);
+                const kecamatan = (dataLengkap && dataLengkap.kecamatan) || r.kecamatan || '';
+                const dtks = (dataLengkap && dataLengkap.dtks) || r.dtks || 'Tidak';
+                const desil = (dataLengkap && dataLengkap.desil) || r.desil || '';
+                const jenis = (dataLengkap && dataLengkap.jenis_disabilitas_uu) || r.jenis_disabilitas_uu || '';
+                
+                const tanggal = r.tanggal_asesmen ? (r.tanggal_asesmen.split ? r.tanggal_asesmen.split('T')[0] : r.tanggal_asesmen) : '';
+                
+                const row = [
+                    i+1,
+                    `"${r.nama || ''}"`,
+                    `"${r.nik || ''}"`,
+                    `"${kecamatan}"`,
+                    `"${dtks}"`,
+                    desil,
+                    `"${jenis}"`,
+                    r.skor || 0,
+                    `"${r.kategori_prioritas || ''}"`,
+                    tanggal,
+                    `"${r.asesor || ''}"`,
+                    `"${(r.rekomendasi || '').replace(/"/g, '""')}"`
+                ];
+                csv += row.join(',') + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Asesmen_Disabilitas_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotif('✅ Data asesmen berhasil diexport', 'success');
+        }
+    </script>
+</body>
+</html>

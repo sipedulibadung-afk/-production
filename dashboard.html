@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SIPEDULI BADUNG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--primary-green, #28a745) 0%, var(--dark-green, #1e7e34) 100%);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-orange, #fd7e14) 0%, var(--dark-orange, #e56b00) 100%);
+            border-bottom: 3px solid var(--white);
+            padding: 20px;
+            text-align: center;
+        }
+        .sidebar-header i {
+            font-size: 2.5rem;
+            color: var(--white);
+        }
+        .sidebar-header h6,
+        .sidebar-header small {
+            color: var(--white) !important;
+            margin: 0;
+        }
+        .nav-link-sidebar {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9) !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            font-weight: 500;
+        }
+        .nav-link-sidebar:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--white) !important;
+            border-left-color: var(--primary-orange);
+        }
+        .nav-link-sidebar.active {
+            background: linear-gradient(90deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            color: var(--white) !important;
+            border-left-color: var(--white);
+            font-weight: 600;
+        }
+        .nav-link-sidebar i {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            background-color: var(--light-gray, #f8f9fa);
+        }
+        .top-navbar {
+            background: var(--white);
+            min-height: 60px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-bottom: 3px solid var(--primary-green);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .top-navbar h5 {
+            color: var(--dark-green) !important;
+            font-weight: 700;
+            margin: 0;
+        }
+        .content-area {
+            padding: 30px;
+        }
+        .stat-card-dash {
+            background: var(--white);
+            border-left: 5px solid var(--primary-green);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .stat-card-dash:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        .stat-card-dash .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-right: 15px;
+        }
+        .stat-card-dash h4 {
+            color: var(--text-dark, #212529) !important;
+            font-weight: 700;
+            margin: 0;
+        }
+        .stat-card-dash small {
+            color: var(--text-muted, #6c757d) !important;
+        }
+        .card-custom {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            background: var(--white);
+        }
+        .card-custom .card-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white) !important;
+            border-bottom: 3px solid var(--primary-orange);
+            font-weight: 600;
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0;
+        }
+        .card-custom .card-header h5,
+        .card-custom .card-header h6 {
+            color: var(--white) !important;
+            margin: 0;
+        }
+        #map {
+            height: 400px;
+            border-radius: 8px;
+            z-index: 1;
+        }
+        .list-group-item-custom {
+            border: none;
+            border-bottom: 1px solid #dee2e6;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        .list-group-item-custom:hover {
+            background-color: var(--light-green, rgba(40, 167, 69, 0.05));
+            transform: translateX(5px);
+        }
+        .table-custom thead {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white) !important;
+        }
+        .table-custom thead th {
+            color: var(--primary-green) !important;
+            font-weight: 600;
+            border: none;
+            padding: 12px;
+        }
+        .table-custom tbody td {
+            color: var(--text-dark) !important;
+            vertical-align: middle;
+            padding: 12px;
+        }
+        .table-custom tbody tr:hover {
+            background-color: var(--light-green);
+        }
+        @media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="bi bi-heart-pulse-fill"></i>
+            <h6 class="fw-bold mt-2">SIPEDULI BADUNG</h6>
+            <small>Dashboard</small>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link-sidebar active">
+                <i class="bi bi-speedometer2"></i>Dashboard
+            </a>
+            <a href="data-disabilitas.html" class="nav-link-sidebar">
+                <i class="bi bi-people"></i>Data Disabilitas
+            </a>
+            <a href="asesmen.html" class="nav-link-sidebar">
+                <i class="bi bi-clipboard2-check"></i>e-Asesmen
+            </a>
+            <a href="bantuan.html" class="nav-link-sidebar">
+                <i class="bi bi-gift"></i>Bantuan
+            </a>
+            <a href="monitoring.html" class="nav-link-sidebar">
+                <i class="bi bi-graph-up"></i>Monitoring
+            </a>
+            <a href="peta.html" class="nav-link-sidebar">
+                <i class="bi bi-geo-alt"></i>Peta Sebaran
+            </a>
+            <a href="laporan.html" class="nav-link-sidebar">
+                <i class="bi bi-file-earmark-bar-graph"></i>Laporan
+            </a>
+            <a href="pimpinan.html" class="nav-link-sidebar">
+                <i class="bi bi-bar-chart-line"></i>Dashboard Pimpinan
+            </a>
+            <hr class="text-white-50 mx-3">
+            <a href="login.html" class="nav-link-sidebar text-danger" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i>Keluar
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <nav class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-2" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h5><i class="bi bi-speedometer2 me-2"></i>Dashboard</h5>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="me-3 d-none d-md-inline">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <span id="displayUser">Admin</span>
+                </span>
+                <span class="badge" style="background: var(--primary-green);" id="currentDate"></span>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Stat Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-dash d-flex align-items-center">
+                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: var(--primary-green);">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div>
+                            <small>Total Penyandang Disabilitas</small>
+                            <h4 id="statTotal">0</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-dash d-flex align-items-center">
+                        <div class="stat-icon" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div>
+                            <small>Sudah Mendapat Bantuan</small>
+                            <h4 id="statBantuan">0</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-dash d-flex align-items-center">
+                        <div class="stat-icon" style="background: rgba(253, 126, 20, 0.1); color: var(--primary-orange);">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <div>
+                            <small>Menunggu Bantuan</small>
+                            <h4 id="statMenunggu">0</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card-dash d-flex align-items-center">
+                        <div class="stat-icon" style="background: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
+                            <i class="bi bi-person-lines-fill"></i>
+                        </div>
+                        <div>
+                            <small>Dalam Pendampingan</small>
+                            <h4 id="statPendampingan">0</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Peta & Prioritas -->
+            <div class="row g-3 mb-4">
+                <div class="col-lg-8">
+                    <div class="card-custom">
+                        <div class="card-header">
+                            <h6><i class="bi bi-geo-alt-fill me-2"></i>Peta Sebaran Penyandang Disabilitas</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="map"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card-custom h-100">
+                        <div class="card-header">
+                            <h6><i class="bi bi-exclamation-diamond me-2"></i>Prioritas Tinggi (Urgent)</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush" id="listPrioritas">
+                                <li class="list-group-item list-group-item-custom text-center text-muted py-4">Memuat data...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Terbaru -->
+            <div class="card-custom">
+                <div class="card-header">
+                    <h6><i class="bi bi-list-ol me-2"></i>Data Penyandang Disabilitas Terbaru</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-custom table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama</th>
+                                    <th>NIK</th>
+                                    <th>Kecamatan</th>
+                                    <th>Desa</th>
+                                    <th>Jenis Disabilitas</th>
+                                    <th>DTKS</th>
+                                    <th>Desil</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyTerbaru">
+                                <tr><td colspan="8" class="text-center py-3">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="assets/js/helper.js"></script>
+    <script>
+        // Set tanggal dan user
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+        document.getElementById('displayUser').textContent = sessionStorage.getItem('userName') || 'Admin';
+
+        // Toggle sidebar mobile
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
+        // Logout
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Koordinat kecamatan di Badung
+        const KECAMATAN_COORDS = {
+            'Kuta': [-8.7184, 115.1686],
+            'Kuta Selatan': [-8.8085, 115.1778],
+            'Kuta Utara': [-8.6481, 115.1722],
+            'Mengwi': [-8.5833, 115.1667],
+            'Abiansemal': [-8.5833, 115.2167],
+            'Petang': [-8.4667, 115.2000]
+        };
+
+        // Load Dashboard
+        async function loadDashboard() {
+            showLoading('Memuat dashboard...');
+            
+            try {
+                const [stats, disabilitasResult, prioritasResult] = await Promise.all([
+                    getStats(),
+                    getDisabilitas({}),
+                    getPrioritas()
+                ]);
+
+                // Update statistik
+                if (stats && stats.success) {
+                    document.getElementById('statTotal').textContent = stats.data.totalDisabilitas || 0;
+                    document.getElementById('statBantuan').textContent = stats.data.sudahBantuan || 0;
+                    document.getElementById('statMenunggu').textContent = stats.data.menungguBantuan || 0;
+                    document.getElementById('statPendampingan').textContent = stats.data.dalamPendampingan || 0;
+                }
+
+                // Update peta
+                renderPeta(disabilitasResult);
+
+                // Update prioritas
+                if (prioritasResult && prioritasResult.success) {
+                    const listPrioritas = document.getElementById('listPrioritas');
+                    const prioritasTinggi = prioritasResult.data
+                        .filter(p => p.kategori_prioritas === 'PRIORITAS I')
+                        .slice(0, 5);
+                    
+                    if (prioritasTinggi.length > 0) {
+                        listPrioritas.innerHTML = prioritasTinggi.map(p => `
+                            <li class="list-group-item list-group-item-custom d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${p.nama || '-'}</strong><br>
+                                    <small class="text-muted">Skor: ${p.skor || 0} | ${p.kecamatan || '-'}</small>
+                                </div>
+                                <span class="badge bg-danger">URGENT</span>
+                            </li>
+                        `).join('');
+                    } else {
+                        listPrioritas.innerHTML = '<li class="list-group-item list-group-item-custom text-center text-muted py-4">Tidak ada prioritas urgent</li>';
+                    }
+                }
+
+                // Update tabel data terbaru
+                if (disabilitasResult && disabilitasResult.success) {
+                    const tbody = document.getElementById('tbodyTerbaru');
+                    if (disabilitasResult.data.length > 0) {
+                        tbody.innerHTML = disabilitasResult.data.slice(0, 10).map((r, i) => {
+                            let badgeDTKS = String(r.dtks || '').toLowerCase() === 'ya' 
+                                ? '<span class="badge bg-success">Ya</span>' 
+                                : '<span class="badge bg-secondary">Tidak</span>';
+                            let badgeDesil = parseInt(r.desil) <= 3 
+                                ? '<span class="badge bg-danger">' + (r.desil || '-') + '</span>'
+                                : parseInt(r.desil) <= 5 
+                                    ? '<span class="badge bg-warning text-dark">' + (r.desil || '-') + '</span>'
+                                    : '<span class="badge bg-info">' + (r.desil || '-') + '</span>';
+                            
+                            return `<tr>
+                                <td>${i+1}</td>
+                                <td><strong>${r.nama || '-'}</strong></td>
+                                <td><small>${r.nik || '-'}</small></td>
+                                <td>${r.kecamatan || '-'}</td>
+                                <td>${r.desa || '-'}</td>
+                                <td><span class="badge" style="background: var(--primary-green);">${r.jenis_disabilitas_uu || '-'}</span></td>
+                                <td>${badgeDTKS}</td>
+                                <td>${badgeDesil}</td>
+                            </tr>`;
+                        }).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-3">Belum ada data</td></tr>';
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showNotif('Gagal memuat dashboard', 'danger');
+            }
+            
+            hideLoading();
+        }
+
+        // Render Peta
+        function renderPeta(disabilitasResult) {
+            // Inisialisasi peta dengan center Badung
+            const map = L.map('map').setView([-8.6500, 115.2000], 11);
+            
+            // Tambahkan tile layer OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            if (disabilitasResult && disabilitasResult.success && disabilitasResult.data.length > 0) {
+                disabilitasResult.data.forEach(d => {
+                    // Gunakan koordinat kecamatan sebagai default
+                    let lat = parseFloat(d.latitude) || KECAMATAN_COORDS[d.kecamatan]?.[0] || -8.6500;
+                    let lng = parseFloat(d.longitude) || KECAMATAN_COORDS[d.kecamatan]?.[1] || 115.2000;
+                    
+                    // Tambahkan random offset agar marker tidak menumpuk
+                    if (!d.latitude) {
+                        lat += (Math.random() - 0.5) * 0.02;
+                        lng += (Math.random() - 0.5) * 0.02;
+                    }
+
+                    // Tentukan warna marker berdasarkan desil
+                    const desil = parseInt(d.desil) || 10;
+                    let warna = '#28a745'; // Hijau (desil tinggi)
+                    if (desil <= 3) warna = '#dc3545'; // Merah (miskin)
+                    else if (desil <= 5) warna = '#fd7e14'; // Orange (sedang)
+
+                    // Buat custom icon
+                    const customIcon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div style="
+                            background-color: ${warna};
+                            width: 20px;
+                            height: 20px;
+                            border-radius: 50%;
+                            border: 3px solid white;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                        "></div>`,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+
+                    // Tambahkan marker
+                    L.marker([lat, lng], { icon: customIcon })
+                        .addTo(map)
+                        .bindPopup(`
+                            <div style="min-width: 200px;">
+                                <h6 style="margin: 0 0 10px 0; color: #1e7e34; font-weight: 700;">${d.nama || 'Tanpa Nama'}</h6>
+                                <p style="margin: 5px 0; font-size: 0.9rem;">
+                                    <strong>NIK:</strong> ${d.nik || '-'}<br>
+                                    <strong>Alamat:</strong> ${d.desa || '-'}, ${d.kecamatan || '-'}<br>
+                                    <strong>Disabilitas:</strong> ${d.jenis_disabilitas_uu || '-'}<br>
+                                    <strong>DTKS:</strong> ${d.dtks || 'Tidak'}<br>
+                                    <strong>Desil:</strong> ${d.desil || '-'}
+                                </p>
+                            </div>
+                        `);
+                });
+            } else {
+                // Tampilkan marker default jika tidak ada data
+                L.marker([-8.6500, 115.2000]).addTo(map)
+                    .bindPopup('<strong>Belum ada data</strong><br>Silakan tambah data disabilitas terlebih dahulu.')
+                    .openPopup();
+            }
+        }
+
+        // Load saat halaman siap
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>

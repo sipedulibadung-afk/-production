@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SIPEDULI BADUNG</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="assets/css/style.css" rel="stylesheet">
+
+    <style>
+        /* Styling Khusus Halaman Login */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px 30px;
+            border-top: 6px solid var(--primary-orange, #fd7e14);
+            transition: transform 0.3s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .logo-wrapper {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(253, 126, 20, 0.1) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border: 3px solid var(--primary-orange, #fd7e14);
+            box-shadow: 0 5px 15px rgba(253, 126, 20, 0.2);
+        }
+
+        .logo-wrapper i {
+            font-size: 3rem;
+            color: var(--primary-green, #28a745);
+        }
+
+        .app-title {
+            color: var(--primary-green, #28a745);
+            font-weight: 800;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .app-subtitle {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green, #28a745);
+            box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary-orange, #fd7e14) 0%, var(--dark-orange, #e56b00) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(253, 126, 20, 0.3);
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, var(--dark-orange, #e56b00) 0%, var(--primary-orange, #fd7e14) 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(253, 126, 20, 0.4);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #adb5bd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Logo Hati -->
+            <div class="logo-wrapper">
+                <img src="assets/img/sipeduli-logo.png" alt="Logo" style="width: 60px; height: 60px;">
+            </div>
+            
+            <h2 class="app-title">SIPEDULI BADUNG</h2>
+            <p class="app-subtitle">Sistem Informasi Pendataan & Layanan Khusus Disabilitas</p>
+
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text" style="background-color: #f8f9fa; border: 2px solid #e9ecef; border-right: none; border-radius: 10px 0 0 10px;">
+                            <i class="bi bi-person-fill" style="color: var(--primary-green, #28a745);"></i>
+                        </span>
+                        <input type="text" class="form-control" id="username" placeholder="Masukkan username" style="border-left: none; border-radius: 0 10px 10px 0;" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text" style="background-color: #f8f9fa; border: 2px solid #e9ecef; border-right: none; border-radius: 10px 0 0 10px;">
+                            <i class="bi bi-lock-fill" style="color: var(--primary-green, #28a745);"></i>
+                        </span>
+                        <input type="password" class="form-control" id="password" placeholder="Masukkan password" style="border-left: none; border-radius: 0 10px 10px 0;" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="role" class="form-label">Login Sebagai</label>
+                    <div class="input-group">
+                        <span class="input-group-text" style="background-color: #f8f9fa; border: 2px solid #e9ecef; border-right: none; border-radius: 10px 0 0 10px;">
+                            <i class="bi bi-shield-lock-fill" style="color: var(--primary-green, #28a745);"></i>
+                        </span>
+                        <select class="form-select" id="role" style="border-left: none; border-radius: 0 10px 10px 0;" required>
+                            <option value="admin">Administrator</option>
+                            <option value="operator_dinsos">Operator Dinas Sosial</option>
+                            <option value="operator_kec">Operator Kecamatan</option>
+                            <option value="operator_desa">Operator Desa/Kelurahan</option>
+                            <option value="pimpinan">Pimpinan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-login" id="btnLogin">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>MASUK SISTEM
+                </button>
+            </form>
+
+            <div class="footer-text">
+                <p class="mb-1">Dinas Sosial Kabupaten Badung</p>
+                <small>© 2026 SIPEDULI BADUNG - Aksi Perubahan PKA</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifikasi Container -->
+    <div id="notifContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Helper JS -->
+    <script src="assets/js/helper.js"></script>
+    
+    <script>
+        // Fungsi untuk menampilkan notifikasi
+        function showNotif(pesan, tipe = 'success') {
+            const container = document.getElementById('notifContainer');
+            const alertClass = tipe === 'success' ? 'alert-success' : 'alert-danger';
+            const icon = tipe === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+            
+            const notif = document.createElement('div');
+            notif.className = `alert ${alertClass} alert-dismissible fade show shadow`;
+            notif.style.cssText = 'min-width: 300px; border-radius: 10px;';
+            notif.innerHTML = `
+                <i class="bi ${icon} me-2"></i>${pesan}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            container.appendChild(notif);
+            
+            setTimeout(() => notif.remove(), 4000);
+        }
+
+        // Handle Login Form
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+            const btnLogin = document.getElementById('btnLogin');
+            
+            // Ubah tombol jadi loading
+            const originalText = btnLogin.innerHTML;
+            btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memverifikasi...';
+            btnLogin.disabled = true;
+
+            try {
+                // Panggil fungsi login dari helper.js
+                if (typeof login !== 'undefined') {
+                    const result = await login(username, password, role);
+                    
+                    if (result && result.success) {
+                        // Simpan data user ke sessionStorage
+                        sessionStorage.setItem('userRole', result.data.role);
+                        sessionStorage.setItem('userName', result.data.nama_lengkap);
+                        sessionStorage.setItem('userId', result.data.id);
+                        
+                        showNotif(`Selamat datang, ${result.data.nama_lengkap}!`, 'success');
+                        
+                        // Redirect ke dashboard setelah 1 detik
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1000);
+                    } else {
+                        showNotif(result?.message || 'Username atau password salah!', 'danger');
+                        btnLogin.innerHTML = originalText;
+                        btnLogin.disabled = false;
+                    }
+                } else {
+                    showNotif('Sistem sedang dalam perbaikan. Silakan coba lagi.', 'danger');
+                    btnLogin.innerHTML = originalText;
+                    btnLogin.disabled = false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotif('Terjadi kesalahan koneksi. Silakan coba lagi.', 'danger');
+                btnLogin.innerHTML = originalText;
+                btnLogin.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

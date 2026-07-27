@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring - SIPEDULI BADUNG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
+    <style>
+        /* Custom Styles for Monitoring Page */
+        .sidebar {
+            position: fixed; top: 0; left: 0; width: 260px; height: 100vh;
+            background: linear-gradient(180deg, var(--primary-green, #28a745) 0%, var(--dark-green, #1e7e34) 100%);
+            z-index: 1000; overflow-y: auto; box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-orange, #fd7e14) 0%, var(--dark-orange, #e56b00) 100%);
+            border-bottom: 3px solid var(--white); padding: 20px; text-align: center;
+        }
+        .sidebar-header i { font-size: 2.5rem; color: var(--white); }
+        .sidebar-header h6, .sidebar-header small { color: var(--white) !important; margin: 0; }
+        .nav-link-sidebar {
+            display: flex; align-items: center; padding: 12px 20px;
+            color: rgba(255,255,255,0.9) !important; text-decoration: none;
+            transition: all 0.3s ease; border-left: 4px solid transparent; font-weight: 500;
+        }
+        .nav-link-sidebar:hover { background: rgba(255,255,255,0.15); border-left-color: var(--primary-orange); }
+        .nav-link-sidebar.active {
+            background: linear-gradient(90deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            border-left-color: var(--white); font-weight: 600;
+        }
+        .nav-link-sidebar i { width: 24px; margin-right: 12px; font-size: 1.1rem; }
+        .main-content { margin-left: 260px; min-height: 100vh; background-color: #f8f9fa; }
+        .top-navbar {
+            background: var(--white); min-height: 60px; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 3px solid var(--primary-green);
+            padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .top-navbar h5 { color: var(--dark-green, #1e7e34) !important; font-weight: 700; margin: 0; }
+        .content-area { padding: 30px; }
+        .card-custom {
+            border: none; border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); background: var(--white);
+        }
+        .card-custom .card-header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white) !important; border-bottom: 3px solid var(--primary-orange);
+            font-weight: 600; padding: 15px 20px; border-radius: 12px 12px 0 0;
+        }
+        .card-custom .card-header h5, .card-custom .card-header h6 { color: var(--white) !important; margin: 0; }
+        .info-card {
+            background: linear-gradient(135deg, rgba(253, 126, 20, 0.1) 0%, rgba(253, 126, 20, 0.05) 100%);
+            border-left: 4px solid var(--primary-orange); padding: 15px;
+            border-radius: 8px; margin-bottom: 20px;
+        }
+        .info-card i { color: var(--primary-orange); font-size: 1.3rem; }
+        .stat-box {
+            background: var(--white); border-radius: 12px; padding: 20px;
+            text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--primary-green); transition: all 0.3s ease;
+        }
+        .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+        .stat-box i { font-size: 2rem; margin-bottom: 10px; }
+        .stat-box h2 { font-weight: 800; margin: 10px 0 5px 0; }
+        .stat-box small { color: #6c757d; font-size: 0.85rem; }
+        .stat-box.stat-selesai { border-top-color: #28a745; }
+        .stat-box.stat-selesai i, .stat-box.stat-selesai h2 { color: #28a745; }
+        .stat-box.stat-proses { border-top-color: #fd7e14; }
+        .stat-box.stat-proses i, .stat-box.stat-proses h2 { color: #fd7e14; }
+        .stat-box.stat-pending { border-top-color: #6c757d; }
+        .stat-box.stat-pending i, .stat-box.stat-pending h2 { color: #6c757d; }
+        .stat-box.stat-total { border-top-color: #0dcaf0; }
+        .stat-box.stat-total i, .stat-box.stat-total h2 { color: #0dcaf0; }
+        
+        .kecamatan-item {
+            padding: 15px; border-bottom: 1px solid #f0f0f0; transition: background 0.2s;
+        }
+        .kecamatan-item:hover { background-color: rgba(40, 167, 69, 0.05); }
+        .kecamatan-item:last-child { border-bottom: none; }
+        .progress-custom { height: 8px; border-radius: 4px; background-color: #e9ecef; }
+        .progress-bar-custom { background: linear-gradient(90deg, var(--primary-green) 0%, var(--primary-orange) 100%); }
+        
+        .dtks-card {
+            background: #f8f9fa; border-radius: 12px; padding: 20px; text-align: center;
+        }
+        .dtks-card h3 { font-weight: 800; margin: 10px 0; }
+        
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="bi bi-heart-pulse-fill"></i>
+            <h6 class="fw-bold mt-2">SIPEDULI BADUNG</h6>
+            <small>Monitoring</small>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link-sidebar"><i class="bi bi-speedometer2"></i>Dashboard</a>
+            <a href="data-disabilitas.html" class="nav-link-sidebar"><i class="bi bi-people"></i>Data Disabilitas</a>
+            <a href="asesmen.html" class="nav-link-sidebar"><i class="bi bi-clipboard2-check"></i>e-Asesmen</a>
+            <a href="bantuan.html" class="nav-link-sidebar"><i class="bi bi-gift"></i>Bantuan</a>
+            <a href="monitoring.html" class="nav-link-sidebar active"><i class="bi bi-graph-up"></i>Monitoring</a>
+            <a href="peta.html" class="nav-link-sidebar"><i class="bi bi-geo-alt"></i>Peta Sebaran</a>
+            <a href="laporan.html" class="nav-link-sidebar"><i class="bi bi-file-earmark-bar-graph"></i>Laporan</a>
+            <a href="pimpinan.html" class="nav-link-sidebar"><i class="bi bi-bar-chart-line"></i>Dashboard Pimpinan</a>
+            <hr class="text-white-50 mx-3">
+            <a href="login.html" class="nav-link-sidebar text-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i>Keluar</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="top-navbar">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-outline-secondary d-lg-none me-2" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h5><i class="bi bi-graph-up me-2"></i>Monitoring & Evaluasi</h5>
+            </div>
+            <span class="badge" style="background: var(--primary-green);" id="currentDate"></span>
+        </nav>
+
+        <div class="content-area">
+            <!-- Info Card -->
+            <div class="info-card">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong>Monitoring Layanan:</strong> Halaman ini menampilkan capaian penyaluran bantuan dan sebaran data disabilitas per wilayah untuk evaluasi program Dinas Sosial.
+            </div>
+
+            <!-- Capaian Layanan -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="stat-box stat-selesai">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <h2 id="capaianSelesai">0%</h2>
+                        <small>Tingkat Penyaluran</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-box stat-proses">
+                        <i class="bi bi-hourglass-split"></i>
+                        <h2 id="capaianProses">0%</h2>
+                        <small>Sedang Diproses</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-box stat-pending">
+                        <i class="bi bi-clock-fill"></i>
+                        <h2 id="capaianPending">0%</h2>
+                        <small>Belum Diproses</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-box stat-total">
+                        <i class="bi bi-clipboard-data-fill"></i>
+                        <h2 id="totalLayanan">0</h2>
+                        <small>Total Layanan</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analitik Wilayah & Demografi -->
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="card-custom h-100">
+                        <div class="card-header">
+                            <h6><i class="bi bi-geo-alt-fill me-2"></i>Sebaran Data per Kecamatan</h6>
+                        </div>
+                        <div class="card-body p-0" id="chartKecamatan">
+                            <p class="text-center text-muted py-5">Memuat analitik wilayah...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="card-custom h-100">
+                        <div class="card-header">
+                            <h6><i class="bi bi-shield-check me-2"></i>Cakupan DTKS & Kemiskinan</h6>
+                        </div>
+                        <div class="card-body" id="chartDtks">
+                            <p class="text-center text-muted py-5">Memuat analitik demografi...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/helper.js"></script>
+    <script>
+        // Set tanggal
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', {
+            day: 'numeric', month: 'long', year: 'numeric'
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Load Monitoring Data
+        async function loadMonitoring() {
+            showLoading('Memuat data monitoring...');
+            
+            try {
+                // Fetch data bantuan dan analitik secara paralel
+                const [bantuanResult, analitikResult] = await Promise.all([
+                    getBantuan({}),
+                    getAnalitik()
+                ]);
+
+                // 1. Update Capaian Layanan
+                if (bantuanResult && bantuanResult.success) {
+                    const data = bantuanResult.data;
+                    const total = data.length;
+                    let selesai = data.filter(d => String(d.status || '').toLowerCase() === 'selesai').length;
+                    let proses = data.filter(d => String(d.status || '').toLowerCase() === 'proses').length;
+                    let pending = total - selesai - proses;
+
+                    document.getElementById('totalLayanan').textContent = total;
+                    document.getElementById('capaianSelesai').textContent = total > 0 ? Math.round((selesai/total)*100) + '%' : '0%';
+                    document.getElementById('capaianProses').textContent = total > 0 ? Math.round((proses/total)*100) + '%' : '0%';
+                    document.getElementById('capaianPending').textContent = total > 0 ? Math.round((pending/total)*100) + '%' : '0%';
+                }
+
+                // 2. Update Sebaran Kecamatan
+                if (analitikResult && analitikResult.success) {
+                    const analitik = analitikResult.data;
+                    renderKecamatan(analitik.perKecamatan);
+                    renderDtks(analitik.dtks, analitik.totalData);
+                } else {
+                    document.getElementById('chartKecamatan').innerHTML = '<p class="text-center text-muted py-5">Data analitik tidak tersedia.</p>';
+                    document.getElementById('chartDtks').innerHTML = '<p class="text-center text-muted py-5">Data analitik tidak tersedia.</p>';
+                }
+
+            } catch (error) {
+                console.error('Error loading monitoring:', error);
+                showNotif('Gagal memuat data monitoring', 'danger');
+            }
+            
+            hideLoading();
+        }
+
+        // Render Sebaran Kecamatan
+        function renderKecamatan(perKecamatan) {
+            const container = document.getElementById('chartKecamatan');
+            const keys = Object.keys(perKecamatan);
+            
+            if (keys.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted py-5">Belum ada data per kecamatan</p>';
+                return;
+            }
+
+            const max = Math.max(...Object.values(perKecamatan).map(x => x.total));
+            let html = '';
+            
+            keys.sort().forEach(kec => {
+                const d = perKecamatan[kec];
+                const width = max > 0 ? (d.total / max) * 100 : 0;
+                const persenDtks = d.total > 0 ? Math.round((d.dtks/d.total)*100) : 0;
+                
+                html += `
+                    <div class="kecamatan-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong style="color: var(--dark-green);">${kec}</strong>
+                            <span class="badge" style="background: var(--primary-green);">${d.total} Jiwa</span>
+                        </div>
+                        <div class="progress progress-custom mb-2">
+                            <div class="progress-bar progress-bar-custom" style="width: ${width}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted">
+                            <span>DTKS: ${d.dtks} (${persenDtks}%)</span>
+                            <span>Desil Rendah: ${d.desilRendah}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Render Cakupan DTKS
+        function renderDtks(dtksData, totalData) {
+            const container = document.getElementById('chartDtks');
+            const total = dtksData.ya + dtksData.tidak;
+            const persenDtks = total > 0 ? Math.round((dtksData.ya/total)*100) : 0;
+            const persenNonDtks = 100 - persenDtks;
+
+            container.innerHTML = `
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="dtks-card" style="border: 2px solid #28a745;">
+                            <i class="bi bi-shield-check" style="font-size: 2rem; color: #28a745;"></i>
+                            <h3 style="color: #28a745;">${dtksData.ya}</h3>
+                            <small class="text-muted">Terdaftar DTKS</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="dtks-card" style="border: 2px solid #6c757d;">
+                            <i class="bi bi-shield-x" style="font-size: 2rem; color: #6c757d;"></i>
+                            <h3 style="color: #6c757d;">${dtksData.tidak}</h3>
+                            <small class="text-muted">Non-DTKS</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="fw-bold mb-3" style="color: var(--dark-green);">Persentase Cakupan DTKS</h6>
+                <div class="progress mb-2" style="height: 25px; border-radius: 12px;">
+                    <div class="progress-bar bg-success" style="width: ${persenDtks}%; border-radius: 12px 0 0 12px;">${persenDtks}% DTKS</div>
+                    <div class="progress-bar bg-secondary" style="width: ${persenNonDtks}%; border-radius: 0 12px 12px 0;">${persenNonDtks}% Non</div>
+                </div>
+                <p class="text-muted small text-center mt-3">Dari total <strong>${totalData || total}</strong> data penyandang disabilitas yang tercatat.</p>
+            `;
+        }
+
+        // Jalankan saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', loadMonitoring);
+    </script>
+</body>
+</html>
